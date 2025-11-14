@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AZRA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff3864;
+            --secondary-color: #6c5ce7;
+            --accent-color: #00cec9;
+            --dark-color: #0f0c29;
+            --darker-color: #080616;
+            --text-color: #ffffff;
+            --card-bg: rgba(35, 28, 78, 0.7);
+            --border-color: #6c5ce7;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --hover-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-color) 0%, var(--darker-color) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(108, 92, 231, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 56, 100, 0.2) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            height: auto;
+            min-height: 600px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" /></svg>');
+            background-size: 200px;
+            opacity: 0.1;
+        }
+
+        .left-panel h1 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .left-panel p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            z-index: 1;
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+
+        .game-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            max-width: 400px;
+        }
+
+        .game-feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .game-feature i {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .game-feature h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 206, 201, 0.5);
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px var(--accent-color);
+            letter-spacing: 2px;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        .social-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.7);
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 45px 12px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(15, 12, 41, 0.5);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+        }
+
+        .input-icon {
+            position: absolute;
+            top: 40px;
+            color: var(--accent-color);
+            z-index: 2;
+        }
+
+        .input-icon-left {
+            left: 15px;
+        }
+
+        .input-icon-right {
+            right: 15px;
+            cursor: pointer;
+        }
+
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .remember-me input {
+            accent-color: var(--accent-color);
+        }
+
+        .forgot-password {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: text-shadow 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password:hover {
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 56, 100, 0.4);
+        }
+
+        .error-message {
+            color: #ff3860;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+            background: rgba(255, 56, 96, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ff3860;
+        }
+
+        .success-message {
+            color: #00b894;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+            background: rgba(0, 184, 148, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #00b894;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .register-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: text-shadow 0.3s;
+        }
+
+        .register-link a:hover {
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .left-panel {
+                padding: 30px;
+                order: 2;
+            }
+            
+            .right-panel {
+                padding: 30px;
+                order: 1;
+            }
+            
+            .game-features {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .game-feature {
+                padding: 12px;
+            }
+            
+            .game-feature i {
+                font-size: 1.5rem;
+            }
+            
+            .game-feature h3 {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .left-panel, .right-panel {
+                padding: 20px;
+            }
+            
+            .left-panel h1 {
+                font-size: 1.8rem;
+            }
+            
+            .left-panel p {
+                font-size: 1rem;
+            }
+            
+            .game-features {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .banner {
+                font-size: 1.8rem;
+            }
+            
+            .social-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .form-group input {
+                padding: 12px 40px 12px 40px;
+            }
+            
+            .input-icon-left {
+                left: 12px;
+            }
+            
+            .input-icon-right {
+                right: 12px;
+            }
+        }
+
+        /* Particle animation */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float 5s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Console effect */
+        .console-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        /* Notification toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast i {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="console-effect"></div>
+    <div class="particles" id="particles"></div>
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+    
+    <div class="container">
+        <div class="left-panel">
+            <h1>Selamat Datang di AZRA</h1>
+            <p>Platform gaming terbaik untuk menemukan game-game seru dan menantang. Bergabunglah dengan komunitas kami!</p>
+            
+            <div class="game-features">
+                <div class="game-feature">
+                    <i class="fas fa-gamepad"></i>
+                    <h3>100+ Game</h3>
+                </div>
+                <div class="game-feature">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Pencapaian</h3>
+                </div>
+                <div class="game-feature">
+                    <i class="fas fa-users"></i>
+                    <h3>Komunitas</h3>
+                </div>
+                <div class="game-feature">
+                    <i class="fas fa-medal"></i>
+                    <h3>Leaderboard</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="logo.png" alt="Logo AZRA" id="logoImage">
+                </div>
+                <div class="banner">AZRA</div>
+            </div>
+            
+            <div class="social-login">
+                <a href="#" class="social-icon"><i class="fab fa-google"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-steam"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
+            </div>
+            
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <i class="fas fa-user input-icon input-icon-left"></i>
+                    <input type="text" id="username" placeholder="Masukkan username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <i class="fas fa-lock input-icon input-icon-left"></i>
+                    <i class="fas fa-eye input-icon input-icon-right" id="passwordToggle"></i>
+                    <input type="password" id="password" placeholder="Masukkan password" required>
+                </div>
+                
+                <div class="login-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Ingat saya</label>
+                    </div>
+                    <a href="#" class="forgot-password">Lupa password?</a>
+                </div>
+                
+                <button type="submit" class="login-btn" id="loginButton">
+                    <span class="loading" id="loadingAnimation"></span>
+                    <span id="loginText">MASUK</span>
+                </button>
+                
+                <div class="error-message" id="errorMessage">
+                    Username atau password salah. Silakan coba lagi.
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    Login berhasil! Mengalihkan...
+                </div>
+            </form>
+            
+            <div class="register-link">
+                Tidak punya akun? <a href="#" id="registerLink">Daftar sekarang</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fungsi untuk mendapatkan daftar user dari localStorage
+        function getUsers() {
+            const users = localStorage.getItem('gamehubUsers');
+            return users ? JSON.parse(users) : [
+                { username: "user", password: "password" },
+                { username: "gamer", password: "gamer123" }
+            ];
+        }
+        
+        // Inisialisasi data user jika belum ada
+        if (!localStorage.getItem('gamehubUsers')) {
+            localStorage.setItem('gamehubUsers', JSON.stringify([
+                { username: "user", password: "password" },
+                { username: "gamer", password: "gamer123" }
+            ]));
+        }
+
+        // Toggle password visibility
+        document.getElementById('passwordToggle').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const loginButton = document.getElementById('loginButton');
+            const loginText = document.getElementById('loginText');
+            const loadingAnimation = document.getElementById('loadingAnimation');
+            
+            // Tampilkan loading animation
+            loginText.textContent = 'Memproses...';
+            loadingAnimation.style.display = 'inline-block';
+            loginButton.disabled = true;
+            
+            // Dapatkan daftar user yang valid
+            const validUsers = getUsers();
+            
+            // Simulasikan proses login (dalam aplikasi nyata, ini akan berupa request API)
+            setTimeout(() => {
+                // Validasi
+                const isValidUser = validUsers.some(user => 
+                    user.username === username && user.password === password
+                );
+                
+                if (isValidUser) {
+                    errorMessage.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // Simpan info login
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', username);
+                    
+                    // Jika remember me dicentang, simpan info login
+                    if (rememberMe) {
+                        localStorage.setItem('rememberMe', 'true');
+                        localStorage.setItem('savedUsername', username);
+                    } else {
+                        localStorage.removeItem('rememberMe');
+                        localStorage.removeItem('savedUsername');
+                    }
+                    
+                    // Tampilkan toast notifikasi
+                    showToast('Login berhasil! Selamat datang di AZRA.');
+                    
+                    // Redirect ke halaman beranda setelah 1.5 detik
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1500);
+                } else {
+                    successMessage.style.display = 'none';
+                    errorMessage.style.display = 'block';
+                    
+                    // Animasi shake pada form
+                    this.classList.add('shake');
+                    setTimeout(() => {
+                        this.classList.remove('shake');
+                    }, 500);
+                }
+                
+                // Sembunyikan loading animation
+                loginText.textContent = 'MASUK';
+                loadingAnimation.style.display = 'none';
+                loginButton.disabled = false;
+            }, 1000); // Simulasi delay jaringan
+        });
+
+        // Register link
+        document.getElementById('registerLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            showToast('Fitur pendaftaran akan segera hadir!');
+        });
+
+        // Forgot password link
+        document.querySelector('.forgot-password').addEventListener('click', function(e) {
+            e.preventDefault();
+            showToast('Fitur reset password akan segera hadir!');
+        });
+
+        // Create particles for background
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 40;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 2 + 1;
+                
+                // Random animation duration
+                const duration = Math.random() * 8 + 5;
+                
+                // Random delay
+                const delay = Math.random() * 5;
+                
+                particle.style.left = `${posX}vw`;
+                particle.style.top = `${posY}vh`;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Check if remember me was checked
+        window.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('rememberMe') === 'true') {
+                document.getElementById('rememberMe').checked = true;
+                document.getElementById('username').value = localStorage.getItem('savedUsername') || '';
+            }
+            
+            // Initialize particles
+            createParticles();
+            
+            // Fungsi untuk mengubah logo
+            window.changeLogo = function(imageUrl) {
+                document.getElementById('logoImage').src = imageUrl;
+            };
+        });
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .shake {
+                animation: shake 0.5s;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
