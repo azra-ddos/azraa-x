@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azrax - AI Chat Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #0a0a0f;
+            --secondary-dark: #12121a;
+            --accent-blue: #2563eb;
+            --accent-red: #dc2626;
+            --accent-light: #1e40af;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --border-color: #2d3748;
+            --message-user: #1e293b;
+            --message-ai: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 280px;
+            background-color: var(--secondary-dark);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            transition: transform 0.3s ease;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-red));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            margin-right: 15px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-red));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .history-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 15px;
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .history-item {
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: rgba(30, 41, 59, 0.4);
+            border-left: 3px solid transparent;
+        }
+
+        .history-item:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .history-item.active {
+            background-color: rgba(37, 99, 235, 0.15);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .history-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-date {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .clear-history {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            padding: 12px;
+            margin: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .clear-history:hover {
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+
+        /* Main chat area */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--primary-dark);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(10, 10, 15, 0.95);
+        }
+
+        .chat-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .api-config {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--secondary-dark);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-sidebar {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            padding-bottom: 100px;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 25px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .user-avatar {
+            background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+        }
+
+        .ai-avatar {
+            background: linear-gradient(135deg, var(--accent-red), #b91c1c);
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 18px 20px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+
+        .user-message .message-content {
+            background-color: var(--message-user);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .ai-message .message-content {
+            background-color: var(--message-ai);
+            border-top-right-radius: 5px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+
+        .message-text {
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-blue);
+            margin-right: 5px;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Input area */
+        .input-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 30px;
+            background: linear-gradient(to top, var(--primary-dark) 70%, transparent);
+        }
+
+        .input-wrapper {
+            display: flex;
+            background-color: var(--secondary-dark);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            color: var(--text-primary);
+            font-size: 15px;
+            max-height: 120px;
+            resize: none;
+            outline: none;
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-light));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.2s;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .send-button:disabled {
+            background: #4b5563;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .model-selector {
+            background-color: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .model-selector:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .connected {
+            background-color: #10b981;
+        }
+
+        .disconnected {
+            background-color: #ef4444;
+        }
+
+        .config-notice {
+            background-color: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 30px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-notice i {
+            color: var(--accent-blue);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+            
+            .api-config {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .api-config {
+                width: 100%;
+            }
+            
+            .messages-container {
+                padding: 20px;
+                padding-bottom: 120px;
+            }
+            
+            .input-container {
+                padding: 15px;
+            }
+            
+            .message-content {
+                max-width: 90%;
+            }
+            
+            .config-notice {
+                margin: 10px 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar with chat history -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-container">
+                <div class="logo" id="logo">AZ</div>
+                <div class="logo-text">Azrax</div>
+            </div>
+            
+            <div class="history-container">
+                <div class="history-title">Riwayat Percakapan</div>
+                <div id="history-list">
+                    <!-- History items will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="clear-history" id="clear-history">
+                <i class="fas fa-trash-alt"></i> Hapus Riwayat
+            </div>
+        </div>
+        
+        <!-- Main chat area -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="toggle-sidebar" id="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="chat-title">Azrax AI Assistant</div>
+                </div>
+                
+                <div class="api-config">
+                    <div class="api-status">
+                        <div class="status-dot" id="status-dot"></div>
+                        <span id="status-text">Status API</span>
+                    </div>
+                    <div class="model-selector-container">
+                        <select class="model-selector" id="model-selector">
+                            <option value="llama3-70b-8192">Llama 3 70B</option>
+                            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                            <option value="gemma-7b-it">Gemma 7B</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="config-notice">
+                <i class="fas fa-info-circle"></i>
+                <span>API Key diatur di dalam kode. Edit variabel <code>GROQ_API_KEY</code> di file JavaScript.</span>
+            </div>
+            
+            <div class="messages-container" id="messages-container">
+                <!-- Welcome message -->
+                <div class="message ai-message">
+                    <div class="message-avatar ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">
+                            Halo! Saya Azrax AI Assistant. Siap membantu Anda dengan berbagai pertanyaan dan percakapan.
+                        </div>
+                        <div class="message-time" id="welcome-time"></div>
+                    </div>
+                </div>
+                
+                <!-- Chat messages will be dynamically added here -->
+            </div>
+            
+            <!-- Input area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        class="message-input" 
+                        id="message-input" 
+                        placeholder="Ketik pesan Anda di sini... (Tekan Shift+Enter untuk baris baru)" 
+                        rows="1"
+                    ></textarea>
+                    <button class="send-button" id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="input-actions">
+                    <select class="model-selector" id="model-selector-bottom">
+                        <option value="llama3-70b-8192">Llama 3 70B</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                        <option value="gemma-7b-it">Gemma 7B</option>
+                    </select>
+                    
+                    <div class="status-indicator">
+                        <div class="status-dot connected" id="status-dot-bottom"></div>
+                        <span id="status-text-bottom">Siap</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // KONFIGURASI API KEY - EDIT DI SINI
+        // ============================================
+        const GROQ_API_KEY = "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";
+        // ============================================
+        
+        // State management
+        let chatHistory = [];
+        let currentChatId = null;
+        let isProcessing = false;
+        
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggle-sidebar');
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const modelSelector = document.getElementById('model-selector');
+        const modelSelectorBottom = document.getElementById('model-selector-bottom');
+        const historyList = document.getElementById('history-list');
+        const clearHistoryBtn = document.getElementById('clear-history');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const statusDotBottom = document.getElementById('status-dot-bottom');
+        const statusTextBottom = document.getElementById('status-text-bottom');
+        const logo = document.getElementById('logo');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current time for welcome message
+            document.getElementById('welcome-time').textContent = getCurrentTime();
+            
+            // Load chat history from localStorage
+            loadChatHistory();
+            
+            // Load selected model from localStorage
+            const savedModel = localStorage.getItem('azrax_model') || 'llama3-70b-8192';
+            modelSelector.value = savedModel;
+            modelSelectorBottom.value = savedModel;
+            
+            // Check API key
+            checkApiKey();
+            
+            // Create a new chat session
+            createNewChat();
+            
+            // Auto-resize textarea
+            messageInput.addEventListener('input', autoResizeTextarea);
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Update logo with saved logo text if exists
+            const savedLogoText = localStorage.getItem('azrax_logo_text') || 'AZ';
+            logo.textContent = savedLogoText;
+        });
+        
+        function checkApiKey() {
+            if (!GROQ_API_KEY || GROQ_API_KEY === "MASUKKAN_API_KEY_ANDA_DISINI") {
+                updateStatus('disconnected', 'API Key Belum Diatur');
+                showApiKeyAlert();
+                return false;
+            }
+            
+            // Test API key dengan request sederhana
+            testApiKey();
+            return true;
+        }
+        
+        async function testApiKey() {
+            updateStatus('connected', 'Mengecek API Key...');
+            
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/models', {
+                    headers: {
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    updateStatus('connected', 'API Key Valid');
+                    return true;
+                } else {
+                    updateStatus('disconnected', 'API Key Tidak Valid');
+                    return false;
+                }
+            } catch (error) {
+                updateStatus('disconnected', 'Gagal Terhubung');
+                return false;
+            }
+        }
+        
+        function showApiKeyAlert() {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'message ai-message';
+            alertDiv.innerHTML = `
+                <div class="message-avatar ai-avatar">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-text">
+                        <strong>API Key Belum Dikonfigurasi!</strong><br><br>
+                        Untuk menggunakan Azrax AI, Anda perlu:<br>
+                        1. Mendapatkan API key dari <a href="https://console.groq.com" target="_blank" style="color: var(--accent-blue);">Groq Console</a><br>
+                        2. Edit file ini dan ganti <code>GROQ_API_KEY</code> di bagian atas kode JavaScript dengan API key Anda<br>
+                        3. Simpan dan refresh halaman ini
+                    </div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(alertDiv);
+            scrollToBottom();
+        }
+        
+        function setupEventListeners() {
+            // Send message on button click
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Send message on Enter (but not Shift+Enter)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Toggle sidebar on mobile
+            toggleSidebar.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Update model selection
+            modelSelector.addEventListener('change', function() {
+                modelSelectorBottom.value = this.value;
+                localStorage.setItem('azrax_model', this.value);
+            });
+            
+            modelSelectorBottom.addEventListener('change', function() {
+                modelSelector.value = this.value;
+                localStorage.setItem('azrax_model', this.value);
+            });
+            
+            // Clear history button
+            clearHistoryBtn.addEventListener('click', clearAllHistory);
+            
+            // Update logo when user changes it in code editor
+            logo.addEventListener('click', function() {
+                const newLogo = prompt('Masukkan teks baru untuk logo (max 2 karakter):', this.textContent);
+                if (newLogo && newLogo.trim().length > 0) {
+                    const logoText = newLogo.trim().substring(0, 2).toUpperCase();
+                    this.textContent = logoText;
+                    localStorage.setItem('azrax_logo_text', logoText);
+                }
+            });
+        }
+        
+        function createNewChat() {
+            currentChatId = 'chat_' + Date.now();
+            const chatTitle = 'Percakapan Baru';
+            
+            // Add to chat history
+            const chat = {
+                id: currentChatId,
+                title: chatTitle,
+                timestamp: Date.now(),
+                messages: []
+            };
+            
+            chatHistory.unshift(chat);
+            saveChatHistory();
+            updateHistoryUI();
+            
+            // Clear messages container except welcome message and API alert
+            const messages = messagesContainer.querySelectorAll('.message:not(.ai-message:first-child):not(.ai-message:nth-child(2))');
+            messages.forEach(msg => msg.remove());
+        }
+        
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || isProcessing) return;
+            
+            // Check if API key is configured
+            if (!GROQ_API_KEY || GROQ_API_KEY === "MASUKKAN_API_KEY_ANDA_DISINI") {
+                alert('API key belum dikonfigurasi. Silakan edit kode dan tambahkan API key Groq Anda.');
+                return;
+            }
+            
+            // Add user message to UI
+            addMessageToUI('user', message);
+            
+            // Clear input
+            messageInput.value = '';
+            autoResizeTextarea();
+            
+            // Disable send button and input
+            setProcessingState(true);
+            
+            // Save user message to current chat
+            const currentChat = chatHistory.find(chat => chat.id === currentChatId);
+            if (currentChat) {
+                currentChat.messages.push({
+                    role: 'user',
+                    content: message,
+                    timestamp: Date.now()
+                });
+                
+                // Update chat title if it's the first user message
+                if (currentChat.messages.length === 1) {
+                    currentChat.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+                    updateHistoryUI();
+                }
+            }
+            
+            // Prepare the conversation history for API
+            const conversationHistory = currentChat ? 
+                currentChat.messages.map(msg => ({ role: msg.role, content: msg.content })) : 
+                [{ role: 'user', content: message }];
+            
+            try {
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Get response from Groq API
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: modelSelector.value,
+                        messages: conversationHistory,
+                        temperature: 0.7,
+                        max_tokens: 1024,
+                        stream: false
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`API error: ${response.status} - ${errorData.error?.message || response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Get AI response
+                const aiResponse = data.choices[0].message.content;
+                
+                // Add AI message to UI
+                addMessageToUI('ai', aiResponse);
+                
+                // Save AI response to current chat
+                if (currentChat) {
+                    currentChat.messages.push({
+                        role: 'assistant',
+                        content: aiResponse,
+                        timestamp: Date.now()
+                    });
+                }
+                
+                // Update status
+                updateStatus('connected', 'Terhubung');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                removeTypingIndicator();
+                
+                // Show error message
+                let errorMessage = `Maaf, terjadi kesalahan: ${error.message}.`;
+                
+                if (error.message.includes('401')) {
+                    errorMessage = 'API key tidak valid. Silakan periksa kembali API key Anda di dalam kode.';
+                } else if (error.message.includes('429')) {
+                    errorMessage = 'Rate limit terlampaui. Silakan coba lagi nanti.';
+                } else if (error.message.includes('500')) {
+                    errorMessage = 'Server error. Silakan coba lagi nanti.';
+                }
+                
+                addMessageToUI('ai', errorMessage);
+                
+                // Update status
+                updateStatus('disconnected', 'Kesalahan API');
+            } finally {
+                // Save chat history
+                saveChatHistory();
+                
+                // Re-enable send button and input
+                setProcessingState(false);
+                
+                // Scroll to bottom
+                scrollToBottom();
+            }
+        }
+        
+        function addMessageToUI(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            const avatarClass = role === 'user' ? 'user-avatar' : 'ai-avatar';
+            const avatarIcon = role === 'user' ? 'fas fa-user' : 'fas fa-robot';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${avatarClass}">
+                    <i class="${avatarIcon}"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-text">${formatMessage(content)}</div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+            `;
+            
+            // Add message to container (before typing indicator if exists)
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                messagesContainer.insertBefore(messageDiv, typingIndicator);
+            } else {
+                messagesContainer.appendChild(messageDiv);
+            }
+            
+            scrollToBottom();
+        }
+        
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = 'typing-indicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar ai-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingDiv);
+            scrollToBottom();
+        }
+        
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function setProcessingState(processing) {
+            isProcessing = processing;
+            sendButton.disabled = processing;
+            messageInput.disabled = processing;
+            
+            if (processing) {
+                sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                updateStatus('connected', 'Memproses...');
+            } else {
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                messageInput.focus();
+            }
+        }
+        
+        function updateStatus(state, text) {
+            statusDot.className = 'status-dot ' + state;
+            statusText.textContent = text;
+            statusDotBottom.className = 'status-dot ' + state;
+            statusTextBottom.textContent = text;
+        }
+        
+        function loadChatHistory() {
+            const savedHistory = localStorage.getItem('azrax_chat_history');
+            if (savedHistory) {
+                try {
+                    chatHistory = JSON.parse(savedHistory);
+                } catch (e) {
+                    console.error('Error parsing chat history:', e);
+                    chatHistory = [];
+                }
+            }
+            updateHistoryUI();
+        }
+        
+        function saveChatHistory() {
+            // Keep only the last 50 chats to avoid localStorage limits
+            if (chatHistory.length > 50) {
+                chatHistory = chatHistory.slice(0, 50);
+            }
+            
+            localStorage.setItem('azrax_chat_history', JSON.stringify(chatHistory));
+        }
+        
+        function updateHistoryUI() {
+            historyList.innerHTML = '';
+            
+            chatHistory.forEach(chat => {
+                const historyItem = document.createElement('div');
+                historyItem.className = `history-item ${chat.id === currentChatId ? 'active' : ''}`;
+                historyItem.dataset.chatId = chat.id;
+                
+                const date = new Date(chat.timestamp);
+                const dateString = date.toLocaleDateString('id-ID', { 
+                    day: 'numeric', 
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                historyItem.innerHTML = `
+                    <div class="history-text">${chat.title || 'Percakapan Tanpa Judul'}</div>
+                    <div class="history-date">${dateString}</div>
+                `;
+                
+                historyItem.addEventListener('click', () => loadChat(chat.id));
+                historyList.appendChild(historyItem);
+            });
+            
+            // If no history, show placeholder
+            if (chatHistory.length === 0) {
+                historyList.innerHTML = '<div class="history-text" style="text-align: center; padding: 20px; color: #64748b;">Tidak ada riwayat percakapan</div>';
+            }
+        }
+        
+        function loadChat(chatId) {
+            const chat = chatHistory.find(c => c.id === chatId);
+            if (!chat) return;
+            
+            currentChatId = chatId;
+            
+            // Clear messages container except welcome message and API alert
+            const welcomeMessage = messagesContainer.querySelector('.ai-message:first-child');
+            const apiAlert = messagesContainer.querySelector('.ai-message:nth-child(2)');
+            messagesContainer.innerHTML = '';
+            
+            if (welcomeMessage) messagesContainer.appendChild(welcomeMessage);
+            if (apiAlert) messagesContainer.appendChild(apiAlert);
+            
+            // Load chat messages
+            chat.messages.forEach(msg => {
+                addMessageToUI(msg.role, msg.content);
+            });
+            
+            // Update history UI to highlight active chat
+            updateHistoryUI();
+            
+            // Close sidebar on mobile
+            sidebar.classList.remove('active');
+            
+            scrollToBottom();
+        }
+        
+        function clearAllHistory() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua riwayat percakapan?')) {
+                chatHistory = [];
+                saveChatHistory();
+                updateHistoryUI();
+                createNewChat();
+            }
+        }
+        
+        function formatMessage(text) {
+            // Convert markdown-like formatting to HTML
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+        
+        function getCurrentTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, '0') + ':' + 
+                   now.getMinutes().toString().padStart(2, '0');
+        }
+        
+        function autoResizeTextarea() {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+        }
+        
+        function scrollToBottom() {
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
+        }
+    </script>
+</body>
+</html>
