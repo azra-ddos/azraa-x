@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azrax - AI Chat Interface</title>
+    <title>Azrax - Gemini AI Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -11,6 +11,7 @@
             --secondary-dark: #12121a;
             --accent-blue: #2563eb;
             --accent-red: #dc2626;
+            --accent-purple: #8b5cf6;
             --accent-light: #1e40af;
             --text-primary: #f8fafc;
             --text-secondary: #cbd5e1;
@@ -64,7 +65,7 @@
         .logo {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-red));
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -78,7 +79,7 @@
         .logo-text {
             font-size: 24px;
             font-weight: 700;
-            background: linear-gradient(to right, var(--accent-blue), var(--accent-red));
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
@@ -232,7 +233,7 @@
         }
 
         .ai-avatar {
-            background: linear-gradient(135deg, var(--accent-red), #b91c1c);
+            background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
         }
 
         .message-content {
@@ -261,6 +262,27 @@
             color: var(--text-primary);
         }
 
+        .message-text img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+
+        .message-text pre {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 5px 0;
+        }
+
+        .message-text code {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
         .message-time {
             font-size: 12px;
             color: var(--text-secondary);
@@ -278,7 +300,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: var(--accent-blue);
+            background-color: var(--accent-purple);
             margin-right: 5px;
             animation: typing 1.5s infinite ease-in-out;
         }
@@ -333,7 +355,7 @@
         }
 
         .send-button {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-light));
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
             border: none;
             border-radius: 8px;
             color: white;
@@ -367,6 +389,278 @@
 
         .model-selector {
             background-color: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .model-selector:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .connected {
+            background-color: #10b981;
+        }
+
+        .disconnected {
+            background-color: #ef4444;
+        }
+
+        .config-notice {
+            background-color: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 30px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-notice i {
+            color: var(--accent-blue);
+        }
+
+        .config-notice a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .config-notice a:hover {
+            text-decoration: underline;
+        }
+
+        .upload-button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .upload-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .image-preview {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .image-preview.active {
+            display: block;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: absolute;
+                height: 100%;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+            
+            .api-config {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .api-config {
+                width: 100%;
+            }
+            
+            .messages-container {
+                padding: 20px;
+                padding-bottom: 120px;
+            }
+            
+            .input-container {
+                padding: 15px;
+            }
+            
+            .message-content {
+                max-width: 90%;
+            }
+            
+            .config-notice {
+                margin: 10px 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar with chat history -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo-container">
+                <div class="logo" id="logo">AZ</div>
+                <div class="logo-text">Azrax</div>
+            </div>
+            
+            <div class="history-container">
+                <div class="history-title">Riwayat Percakapan</div>
+                <div id="history-list">
+                    <!-- History items will be dynamically added here -->
+                </div>
+            </div>
+            
+            <div class="clear-history" id="clear-history">
+                <i class="fas fa-trash-alt"></i> Hapus Riwayat
+            </div>
+        </div>
+        
+        <!-- Main chat area -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <button class="toggle-sidebar" id="toggle-sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="chat-title">Azrax Gemini AI</div>
+                </div>
+                
+                <div class="api-config">
+                    <div class="api-status">
+                        <div class="status-dot" id="status-dot"></div>
+                        <span id="status-text">Status API</span>
+                    </div>
+                    <div class="model-selector-container">
+                        <select class="model-selector" id="model-selector">
+                            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            <option value="gemini-pro">Gemini Pro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="config-notice">
+                <i class="fas fa-info-circle"></i>
+                <span>API Key diatur di dalam kode. Edit variabel <code>GEMINI_API_KEY</code> di file JavaScript. Dapatkan API key dari <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></span>
+            </div>
+            
+            <div class="messages-container" id="messages-container">
+                <!-- Welcome message -->
+                <div class="message ai-message">
+                    <div class="message-avatar ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">
+                            <h3>👋 Halo! Saya Azrax Gemini AI</h3>
+                            <p>Saya dapat membantu Anda dengan:</p>
+                            <ul>
+                                <li>💬 Percakapan dan tanya jawab</li>
+                                <li>📝 Analisis dan penulisan konten</li>
+                                <li>🧠 Pemecahan masalah kreatif</li>
+                                <li>🔍 Penjelasan konsep kompleks</li>
+                            </ul>
+                            <p><strong>Note:</strong> Masukkan API key Gemini Anda di dalam kode untuk mulai chatting.</p>
+                        </div>
+                        <div class="message-time" id="welcome-time"></div>
+                    </div>
+                </div>
+                
+                <!-- Chat messages will be dynamically added here -->
+            </div>
+            
+            <!-- Input area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        class="message-input" 
+                        id="message-input" 
+                        placeholder="Ketik pesan Anda di sini... (Tekan Shift+Enter untuk baris baru)" 
+                        rows="1"
+                    ></textarea>
+                    <button class="upload-button" id="upload-button" title="Upload gambar (coming soon)">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <button class="send-button" id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="input-actions">
+                    <select class="model-selector" id="model-selector-bottom">
+                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                        <option value="gemini-pro">Gemini Pro</option>
+                    </select>
+                    
+                    <div class="status-indicator">
+                        <div class="status-dot connected" id="status-dot-bottom"></div>
+                        <span id="status-text-bottom">Siap</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // KONFIGURASI API KEY - EDIT DI SINI
+        // ============================================
+        const GEMINI_API_KEY = "AIzaSyDRKVQ1EMG_Z8Yx9sJr93A35rMnwUF8Pnc";
+        // ============================================
+        
+        // State management
+        let chatHistory = [];
+        let currentChatId = null;
+        let isProcessing = false;
+        
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggle-sidebar');
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const modelor: var(--secondary-dark);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
