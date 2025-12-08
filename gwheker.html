@@ -1,0 +1,297 @@
+// Data pengguna (bisa diganti manual di sini)
+const users = [
+    { username: "admin", password: "admin123", name: "Admin User" },
+    { username: "user1", password: "password1", name: "John Doe" },
+    { username: "user2", password: "password2", name: "Jane Smith" },
+    { username: "test", password: "test123", name: "Test User" }
+];
+
+// Rotasi logo 3D
+let rotationX = 0;
+let rotationY = 0;
+let rotationZ = 0;
+let isAutoRotating = true;
+let rotationInterval;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logo3d = document.getElementById('logo3d');
+    const logoImg = document.getElementById('logoImg');
+    const rotateXBtn = document.getElementById('rotateX');
+    const rotateYBtn = document.getElementById('rotateY');
+    const rotateZBtn = document.getElementById('rotateZ');
+    const resetRotationBtn = document.getElementById('resetRotation');
+    const loginBtn = document.getElementById('loginBtn');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const loginNotification = document.getElementById('loginNotification');
+    const notificationText = document.getElementById('notificationText');
+    const pageTransition = document.getElementById('pageTransition');
+    
+    // Fungsi untuk mengupdate rotasi logo
+    function updateLogoRotation() {
+        logo3d.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) rotateZ(${rotationZ}deg)`;
+    }
+    
+    // Rotasi otomatis
+    function startAutoRotation() {
+        if (isAutoRotating) {
+            rotationInterval = setInterval(() => {
+                rotationY += 0.5;
+                updateLogoRotation();
+            }, 50);
+        }
+    }
+    
+    // Hentikan rotasi otomatis saat interaksi
+    function stopAutoRotation() {
+        clearInterval(rotationInterval);
+        isAutoRotating = false;
+    }
+    
+    // Mulai rotasi otomatis
+    startAutoRotation();
+    
+    // Kontrol rotasi manual
+    rotateXBtn.addEventListener('click', function() {
+        stopAutoRotation();
+        rotationX += 15;
+        updateLogoRotation();
+    });
+    
+    rotateYBtn.addEventListener('click', function() {
+        stopAutoRotation();
+        rotationY += 15;
+        updateLogoRotation();
+    });
+    
+    rotateZBtn.addEventListener('click', function() {
+        stopAutoRotation();
+        rotationZ += 15;
+        updateLogoRotation();
+    });
+    
+    resetRotationBtn.addEventListener('click', function() {
+        rotationX = 0;
+        rotationY = 0;
+        rotationZ = 0;
+        updateLogoRotation();
+        isAutoRotating = true;
+        startAutoRotation();
+    });
+    
+    // Interaksi dengan logo untuk rotasi manual dengan drag
+    let isDragging = false;
+    let prevX = 0;
+    let prevY = 0;
+    
+    logo3d.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        prevX = e.clientX;
+        prevY = e.clientY;
+        stopAutoRotation();
+        logo3d.style.cursor = 'grabbing';
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        
+        const deltaX = e.clientX - prevX;
+        const deltaY = e.clientY - prevY;
+        
+        rotationY += deltaX * 0.5;
+        rotationX -= deltaY * 0.5;
+        
+        updateLogoRotation();
+        
+        prevX = e.clientX;
+        prevY = e.clientY;
+    });
+    
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        logo3d.style.cursor = 'grab';
+    });
+    
+    // Interaksi touch untuk perangkat mobile
+    logo3d.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        prevX = e.touches[0].clientX;
+        prevY = e.touches[0].clientY;
+        stopAutoRotation();
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        
+        const deltaX = e.touches[0].clientX - prevX;
+        const deltaY = e.touches[0].clientY - prevY;
+        
+        rotationY += deltaX * 0.5;
+        rotationX -= deltaY * 0.5;
+        
+        updateLogoRotation();
+        
+        prevX = e.touches[0].clientX;
+        prevY = e.touches[0].clientY;
+        
+        e.preventDefault();
+    });
+    
+    document.addEventListener('touchend', function() {
+        isDragging = false;
+    });
+    
+    // Ganti logo dengan file yang diupload (opsional)
+    logoImg.addEventListener('click', function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/png, image/jpeg';
+        
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    logoImg.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        input.click();
+    });
+    
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+    
+    // Login functionality
+    loginBtn.addEventListener('click', function() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        
+        // Validasi input
+        if (!username || !password) {
+            showNotification('Username dan password harus diisi!', 'error');
+            return;
+        }
+        
+        // Cari user
+        const user = users.find(u => u.username === username && u.password === password);
+        
+        if (user) {
+            // Login berhasil
+            showNotification('Login berhasil! Mengarahkan...', 'success');
+            
+            // Simpan data login jika remember me dicentang
+            if (rememberMe) {
+                localStorage.setItem('encrypt_rememberMe', 'true');
+                localStorage.setItem('encrypt_username', username);
+            } else {
+                localStorage.removeItem('encrypt_rememberMe');
+            }
+            
+            // Simpan status login
+            localStorage.setItem('encrypt_loggedIn', 'true');
+            localStorage.setItem('encrypt_username', user.name);
+            
+            // Tampilkan animasi loading
+            const btnText = loginBtn.querySelector('.btn-text');
+            const btnLoader = loginBtn.querySelector('.btn-loader');
+            const btnIcon = loginBtn.querySelector('.btn-icon');
+            
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'flex';
+            btnIcon.style.display = 'none';
+            
+            // Tampilkan animasi transisi
+            setTimeout(() => {
+                pageTransition.classList.add('active');
+                
+                // Redirect ke halaman beranda setelah animasi
+                setTimeout(() => {
+                    window.location.href = 'beranda.html';
+                }, 1500);
+            }, 1000);
+        } else {
+            // Login gagal
+            showNotification('Username atau password salah!', 'error');
+            
+            // Animasi shake pada form
+            const loginForm = document.querySelector('.login-form');
+            loginForm.classList.add('shake');
+            setTimeout(() => {
+                loginForm.classList.remove('shake');
+            }, 500);
+        }
+    });
+    
+    // Enter untuk login
+    document.getElementById('username').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('password').focus();
+        }
+    });
+    
+    document.getElementById('password').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loginBtn.click();
+        }
+    });
+    
+    // Cek remember me
+    const rememberMe = localStorage.getItem('encrypt_rememberMe');
+    if (rememberMe === 'true') {
+        document.getElementById('rememberMe').checked = true;
+        const savedUsername = localStorage.getItem('encrypt_username');
+        if (savedUsername) {
+            document.getElementById('username').value = savedUsername;
+        }
+    }
+    
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message, type) {
+        notificationText.textContent = message;
+        
+        // Update warna berdasarkan type
+        if (type === 'error') {
+            loginNotification.style.background = 'rgba(244, 67, 54, 0.1)';
+            loginNotification.style.borderColor = 'rgba(244, 67, 54, 0.3)';
+            loginNotification.style.color = 'var(--error-color)';
+        } else if (type === 'success') {
+            loginNotification.style.background = 'rgba(76, 175, 80, 0.1)';
+            loginNotification.style.borderColor = 'rgba(76, 175, 80, 0.3)';
+            loginNotification.style.color = 'var(--success-color)';
+        }
+        
+        // Tampilkan notifikasi
+        loginNotification.classList.add('show');
+        
+        // Sembunyikan setelah 3 detik
+        setTimeout(() => {
+            loginNotification.classList.remove('show');
+        }, 3000);
+    }
+    
+    // Tambah animasi shake ke CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    `;
+    document.head.appendChild(style);
+});
