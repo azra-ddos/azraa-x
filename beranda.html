@@ -407,4 +407,218 @@
             document.querySelectorAll('.tool-card').forEach(card => {
                 card.addEventListener('click', function() {
                     const tool = this.getAttribute('data-tool');
-                    // Buka quick tools panel dengan t
+                    // Buka quick tools panel dengan t              </button>
+                                </div>
+                            </div>
+                            <textarea id="inputText" placeholder="Masukkan teks yang ingin dienkripsi..."></textarea>
+                            <div class="char-count">
+                                <span id="inputCharCount">0</span> karakter
+                            </div>
+                        </div>
+                        
+                        <div class="algorithm-section">
+                            <h3><i class="fas fa-code"></i> Pilih Algoritma</h3>
+                            <div class="algorithm-selector">
+                                <select id="algorithmSelect">
+                                    <option value="caesar">Caesar Cipher</option>
+                                    <option value="base64">Base64 Encoding</option>
+                                    <option value="aes">AES Encryption</option>
+                                    <option value="xor">XOR Cipher</option>
+                                    <option value="reverse">Reverse Text</option>
+                                </select>
+                                
+                                <div class="algorithm-options" id="algorithmOptions">
+                                    <!-- Options akan diisi oleh JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="key-section">
+                            <h3><i class="fas fa-key"></i> Kunci Enkripsi</h3>
+                            <div class="key-input">
+                                <input type="text" id="encryptionKey" placeholder="Masukkan kunci enkripsi (opsional untuk beberapa algoritma)">
+                                <button class="generate-key-btn" id="generateKey">
+                                    <i class="fas fa-random"></i> Generate
+                                </button>
+                            </div>
+                            <div class="key-info">
+                                <i class="fas fa-info-circle"></i>
+                                <span id="keyInfoText">Kunci akan digunakan untuk mengenkripsi teks Anda. Simpan dengan aman!</span>
+                            </div>
+                        </div>
+                        
+                        <div class="action-section">
+                            <button class="encrypt-btn" id="encryptBtn">
+                                <i class="fas fa-lock"></i> Enkripsi Sekarang
+                            </button>
+                            <div class="action-info">
+                                <i class="fas fa-clock"></i>
+                                <span>Proses enkripsi akan memakan waktu beberapa detik</span>
+                            </div>
+                        </div>
+                        
+                        <div class="output-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-lock"></i> Hasil Enkripsi</h3>
+                                <div class="output-actions">
+                                    <button class="output-action-btn" id="copyOutput">
+                                        <i class="fas fa-copy"></i> Salin
+                                    </button>
+                                    <button class="output-action-btn" id="saveOutput">
+                                        <i class="fas fa-download"></i> Simpan
+                                    </button>
+                                    <button class="output-action-btn" id="clearOutput">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </div>
+                            </div>
+                            <textarea id="outputText" placeholder="Hasil enkripsi akan muncul di sini..." readonly></textarea>
+                            <div class="output-info">
+                                <div class="info-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span id="securityLevel">Keamanan: Tinggi</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-history"></i>
+                                    <span id="processingTime">Waktu: 0ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other pages (Decrypt, Algorithms, History, Settings, About) -->
+                <div class="page" id="decryptPage">
+                    <!-- Konten halaman dekripsi -->
+                </div>
+                
+                <div class="page" id="algorithmsPage">
+                    <!-- Konten halaman algoritma -->
+                </div>
+                
+                <div class="page" id="historyPage">
+                    <!-- Konten halaman riwayat -->
+                </div>
+                
+                <div class="page" id="settingsPage">
+                    <!-- Konten halaman pengaturan -->
+                </div>
+                
+                <div class="page" id="aboutPage">
+                    <!-- Konten halaman tentang -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifications Panel -->
+        <div class="notifications-panel" id="notificationsPanel">
+            <div class="notifications-header">
+                <h3>Notifikasi</h3>
+                <button class="close-notifications" id="closeNotifications">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="notifications-list">
+                <!-- Notifikasi akan diisi oleh JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Quick Tools Panel -->
+        <div class="quick-tools-panel" id="quickToolsPanel">
+            <!-- Panel alat cepat akan muncul saat tool-card diklik -->
+        </div>
+    </div>
+    
+    <script src="encryption.js"></script>
+    <script src="transition.js"></script>
+    <script>
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set username dari localStorage
+            const username = localStorage.getItem('encrypt_username');
+            if (username) {
+                document.getElementById('loggedInUser').textContent = username;
+            }
+            
+            // Navigasi menu
+            const menuItems = document.querySelectorAll('.menu-item');
+            const pages = document.querySelectorAll('.page');
+            const pageTitle = document.getElementById('pageTitle');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Hapus active class dari semua menu dan page
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    pages.forEach(p => p.classList.remove('active'));
+                    
+                    // Tambah active class ke menu yang diklik
+                    this.classList.add('active');
+                    
+                    // Tampilkan page yang sesuai
+                    const pageId = this.getAttribute('data-page');
+                    const targetPage = document.getElementById(pageId + 'Page');
+                    if (targetPage) {
+                        targetPage.classList.add('active');
+                        pageTitle.textContent = this.querySelector('span').textContent;
+                    }
+                    
+                    // Animasi transisi halaman
+                    document.querySelector('.page-content').style.opacity = '0';
+                    setTimeout(() => {
+                        document.querySelector('.page-content').style.opacity = '1';
+                    }, 150);
+                });
+            });
+            
+            // Toggle sidebar
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('collapsed');
+            });
+            
+            // Toggle theme
+            document.getElementById('themeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const icon = this.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.className = 'fas fa-sun';
+                } else {
+                    icon.className = 'fas fa-moon';
+                }
+            });
+            
+            // Notifications
+            document.getElementById('notificationBtn').addEventListener('click', function() {
+                document.getElementById('notificationsPanel').classList.toggle('active');
+            });
+            
+            document.getElementById('closeNotifications').addEventListener('click', function() {
+                document.getElementById('notificationsPanel').classList.remove('active');
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('encrypt_loggedIn');
+                localStorage.removeItem('encrypt_username');
+                window.location.href = 'index.html';
+            });
+            
+            // Tool cards
+            document.querySelectorAll('.tool-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const tool = this.getAttribute('data-tool');
+                    // Buka quick tools panel dengan tool yang dipilih
+                    openQuickTool(tool);
+                });
+            });
+            
+            function openQuickTool(tool) {
+                // Implementasi untuk membuka panel alat cepat
+                console.log('Membuka alat: ' + tool);
+            }
+        });
+    </script>
+</body>
+</html>
