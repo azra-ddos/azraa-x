@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Courier New', monospace;
+}
+
+body {
+    background: #0a0a0f;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 40, 80, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 85% 30%, rgba(20, 20, 30, 0.1) 0%, transparent 20%);
+    color: #e0e0ff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.login-container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    height: 700px;
+    background: rgba(10, 12, 18, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 
+        0 0 50px rgba(0, 40, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #000814, #001133, #000814);
+    z-index: -1;
+    border-radius: 22px;
+}
+
+.logo-section {
+    flex: 1;
+    background: 
+        linear-gradient(135deg, rgba(0, 15, 30, 0.9), rgba(0, 10, 20, 0.95)),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,215,0,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+#dynamicLogo {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 30px;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    transition: all 0.5s;
+}
+
+#dynamicLogo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8));
+}
+
+.logo-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.gold-text {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    letter-spacing: 8px;
+    color: #4d7cff;
+    margin-top: 5px;
+    text-transform: uppercase;
+}
+
+.form-section {
+    flex: 1;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.form-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-right: 15px;
+}
+
+.pulse-dot {
+    width: 12px;
+    height: 12px;
+    background: #00ff00;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.input-group {
+    margin-bottom: 30px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: #8a9bff;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    background: rgba(20, 25, 40, 0.7);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #4d7cff;
+    box-shadow: 0 0 15px rgba(77, 124, 255, 0.5);
+    background: rgba(30, 35, 50, 0.9);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #001133, #000814);
+    border: 1px solid #ffd700;
+    border-radius: 8px;
+    color: #ffd700;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #002255, #001133);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+}
+
+.btn-glow {
+    position: absolute;
+    top: -10px;
+    left: -100%;
+    width: 100%;
+    height: 150%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+    transition: left 0.7s;
+}
+
+.login-btn:hover .btn-glow {
+    left: 100%;
+}
+
+.terminal-output {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(0, 5, 15, 0.8);
+    border: 1px solid rgba(0, 80, 255, 0.3);
+    border-radius: 8px;
+    height: 150px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.terminal-line {
+    margin-bottom: 5px;
+    color: #a0ffa0;
+}
+
+.footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    color: #5566aa;
+}
