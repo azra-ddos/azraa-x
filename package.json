@@ -1,0 +1,15 @@
+{
+  "name": "telegram-bot-dashboard",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.18.2",
+    "telegraf": "^4.15.3",
+    "socket.io": "^4.7.2",
+    "sharp": "^0.33.0",
+    "qrcode": "^1.5.3",
+    "crypto-js": "^4.2.0",
+    "axios": "^1.6.2",
+    "@vercel/blob": "^0.19.0",
+    "supabase": "^2.38.0"
+  }
+}
