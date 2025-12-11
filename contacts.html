@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontak - Chat App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="contacts-container">
+        <!-- Sidebar Kontak -->
+        <div class="contacts-sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="avatar" id="current-user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3 id="current-user-name">Loading...</h3>
+                        <p class="user-status" id="current-user-status">Online</p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-actions">
+                    <button class="icon-btn" id="new-chat-btn" title="Chat Baru">
+                        <i class="fas fa-comment-medical"></i>
+                    </button>
+                    <button class="icon-btn" id="settings-btn" title="Pengaturan">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="icon-btn" id="logout-btn" title="Keluar">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="contact-search" placeholder="Cari kontak atau pesan...">
+                    <button class="search-clear" id="clear-search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="contacts-tabs">
+                <button class="contacts-tab active" id="all-contacts-tab">
+                    <i class="fas fa-users"></i>
+                    <span>Semua Kontak</span>
+                </button>
+                <button class="contacts-tab" id="online-contacts-tab">
+                    <i class="fas fa-circle"></i>
+                    <span>Online</span>
+                    <span class="badge" id="online-count">0</span>
+                </button>
+                <button class="contacts-tab" id="recent-chats-tab">
+                    <i class="fas fa-clock"></i>
+                    <span>Terbaru</span>
+                </button>
+                <button class="contacts-tab" id="groups-tab">
+                    <i class="fas fa-user-group"></i>
+                    <span>Grup</span>
+                    <span class="badge" id="groups-count">0</span>
+                </button>
+            </div>
+            
+            <div class="contacts-list-container">
+                <div class="contacts-list-header">
+                    <h3>Kontak</h3>
+                    <span class="contacts-count" id="contacts-count">0 kontak</span>
+                </div>
+                
+                <div class="contacts-list" id="contacts-list">
+                    <!-- Kontak akan dimuat di sini secara dinamis -->
+                    <div class="loading-contacts">
+                        <div class="spinner"></div>
+                        <p>Memuat kontak...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="user-id-display">
+                    <p>ID Anda: <strong id="user-id-display">Loading...</strong></p>
+                    <button class="copy-btn" id="copy-user-id" title="Salin ID">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <p class="app-version">ChatPro v1.0</p>
+            </div>
+        </div>
+        
+        <!-- Area Utama untuk Memulai Chat Baru -->
+        <div class="contacts-main">
+            <div class="empty-chat-state">
+                <div class="empty-chat-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h2>Pilih kontak untuk memulai percakapan</h2>
+                <p>Pilih dari daftar kontak atau mulai chat baru dengan ID pengguna</p>
+                
+                <div class="start-chat-options">
+                    <div class="start-chat-card" id="start-by-id">
+                        <div class="card-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h3>Chat dengan ID</h3>
+                        <p>Mulai percakapan dengan memasukkan ID pengguna</p>
+                        <button class="start-btn">Mulai</button>
+                    </div>
+                    
+                    <div class="start-chat-card" id="create-group">
+                        <div class="card-icon">
+                            <i class="fas fa-user-group"></i>
+                        </div>
+                        <h3>Buat Grup</h3>
+                        <p>Buat grup percakapan dengan banyak anggota</p>
+                        <button class="start-btn">Buat</button>
+                    </div>
+                    
+                    <div class="start-chat-card" id="scan-qr">
+                        <div class="card-icon">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h3>Scan QR Code</h3>
+                        <p>Tambahkan kontak dengan memindai kode QR mereka</p>
+                        <button class="start-btn">Scan</button>
+                    </div>
+                </div>
+                
+                <div class="recent-chats-section">
+                    <h3>Percakapan Terbaru</h3>
+                    <div class="recent-chats-list" id="recent-chats-list">
+                        <!-- Percakapan terbaru akan dimuat di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal untuk Chat dengan ID -->
+    <div class="modal" id="chat-by-id-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chat dengan ID Pengguna</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Masukkan ID pengguna yang ingin Anda ajak chat. ID dapat ditemukan di profil pengguna.</p>
+                <div class="form-group">
+                    <label for="target-user-id">ID Pengguna</label>
+                    <input type="text" id="target-user-id" placeholder="contoh: USER12345ABCD">
+                </div>
+                <div class="form-group">
+                    <label for="initial-message">Pesan Awal (Opsional)</label>
+                    <textarea id="initial-message" placeholder="Halo! Saya ingin berkenalan..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal">Batal</button>
+                <button class="btn-primary" id="start-chat-by-id">Mulai Chat</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
