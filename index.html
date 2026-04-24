@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatApp - WhatsApp Style</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen active">
+    <div class="login-card">
+      <div class="login-logo">
+        <i class="fas fa-comment-dots"></i>
+        <h1>ChatApp</h1>
+      </div>
+      <p class="login-sub">Masuk pake username aja, gak ribet!</p>
+      <input type="text" id="username-input" placeholder="Username lo..." maxlength="20" autocomplete="off">
+      <div id="login-error" class="error-msg"></div>
+      <button id="login-btn" onclick="login()">
+        <i class="fas fa-arrow-right"></i> Masuk
+      </button>
+    </div>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="chat-screen" class="screen">
+
+    <!-- SIDEBAR (KONTAK) -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="user-avatar" id="my-avatar"></div>
+        <div class="user-info">
+          <span id="my-username">User</span>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Keluar">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-user" placeholder="Cari user..." oninput="filterUsers()">
+      </div>
+      <div class="online-users" id="online-users">
+        <!-- Daftar user online -->
+      </div>
+    </div>
+
+    <!-- CHAT AREA -->
+    <div class="chat-area" id="chat-area">
+      <!-- HEADER CHAT -->
+      <div class="chat-header" id="chat-header">
+        <button class="back-btn" onclick="toggleSidebar()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="chat-avatar" id="chat-avatar"></div>
+        <div class="chat-user-info">
+          <span id="chat-username">Pilih kontak</span>
+          <span id="chat-status">offline</span>
+        </div>
+      </div>
+
+      <!-- PESAN -->
+      <div class="messages" id="messages">
+        <div class="no-chat">
+          <i class="fas fa-comments"></i>
+          <p>Pilih user buat mulai chatting, boss!</p>
+        </div>
+      </div>
+
+      <!-- INPUT AREA -->
+      <div class="input-area" id="input-area">
+        <button class="attach-btn"><i class="fas fa-paperclip"></i></button>
+        <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
