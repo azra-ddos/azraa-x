@@ -18,7 +18,7 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "public, max-age=3600"
         },
         {
           "key": "X-Content-Type-Options",
@@ -33,6 +33,20 @@
           "value": "1; mode=block"
         }
       ]
+    },
+    {
+      "source": "/index.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
     }
   ]
+}  ]
 }
