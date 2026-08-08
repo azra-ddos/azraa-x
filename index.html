@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="azra-IP — Advanced IP Address Tracker with detailed geolocation, network, security statistics. Built by azraDev." />
+  <meta name="author" content="azraDev" />
+  <meta name="keywords" content="IP tracker, IP address lookup, geolocation, network analysis, ISP info" />
+  <title>azra-IP | Advanced IP Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated background particles -->
+  <div id="particles-bg" aria-hidden="true"></div>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <!-- === HEADER === -->
+  <header class="app-header" role="banner">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" stroke="url(#logoGrad)" stroke-width="2"/>
+            <circle cx="18" cy="18" r="8" fill="url(#logoGrad)" opacity="0.3"/>
+            <circle cx="18" cy="18" r="3" fill="url(#logoGrad)"/>
+            <line x1="18" y1="1" x2="18" y2="11" stroke="url(#logoGrad)" stroke-width="1.5"/>
+            <line x1="18" y1="25" x2="18" y2="35" stroke="url(#logoGrad)" stroke-width="1.5"/>
+            <line x1="1" y1="18" x2="11" y2="18" stroke="url(#logoGrad)" stroke-width="1.5"/>
+            <line x1="25" y1="18" x2="35" y2="18" stroke="url(#logoGrad)" stroke-width="1.5"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="36" y2="36">
+                <stop offset="0%" stop-color="#00d4ff"/>
+                <stop offset="100%" stop-color="#7b2ff7"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-name">azra<span class="brand-accent">-IP</span></h1>
+          <p class="brand-tagline">Advanced IP Intelligence</p>
+        </div>
+      </div>
+
+      <nav class="header-nav" role="navigation" aria-label="Main navigation">
+        <button id="nav-tracker" class="nav-btn active" data-tab="tracker" aria-pressed="true">
+          <span class="nav-icon">⌖</span> Tracker
+        </button>
+        <button id="nav-history" class="nav-btn" data-tab="history" aria-pressed="false">
+          <span class="nav-icon">◷</span> History
+        </button>
+        <button id="nav-batch" class="nav-btn" data-tab="batch" aria-pressed="false">
+          <span class="nav-icon">⊞</span> Batch Scan
+        </button>
+        <button id="nav-compare" class="nav-btn" data-tab="compare" aria-pressed="false">
+          <span class="nav-icon">⇌</span> Compare
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <div class="live-clock" id="live-clock" aria-live="polite" aria-label="Current time"></div>
+        <button id="btn-my-ip" class="btn-primary btn-sm" aria-label="Check my IP address">
+          <span>My IP</span>
+        </button>
+        <button id="btn-export" class="btn-ghost btn-sm" aria-label="Export results" title="Export to JSON">
+          <span>⤓ Export</span>
+        </button>
+        <button id="btn-theme" class="btn-icon" aria-label="Toggle theme" title="Toggle theme">⬡</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- === MAIN CONTENT === -->
+  <main class="main-content" role="main">
+
+    <!-- ===== TAB: TRACKER ===== -->
+    <section id="tab-tracker" class="tab-section active" aria-label="IP Tracker">
+
+      <!-- Search bar -->
+      <div class="search-section">
+        <div class="search-wrap" role="search">
+          <div class="search-prefix" aria-hidden="true">⌖</div>
+          <input
+            id="ip-input"
+            type="text"
+            class="search-input"
+            placeholder="Enter IP address or domain (e.g. 8.8.8.8 or google.com)"
+            aria-label="IP address or domain name input"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <div class="search-suffix" id="search-status" aria-hidden="true">
+            <span class="dot-idle" id="status-dot" aria-hidden="true"></span>
+          </div>
+          <button id="btn-track" class="btn-track" aria-label="Track IP address">
+            <span class="btn-track-text">TRACE</span>
+            <span class="btn-track-icon" aria-hidden="true">→</span>
+          </button>
+        </div>
+        <div class="search-suggestions" id="search-suggestions" role="listbox" aria-label="Search suggestions" hidden></div>
+        <div class="quick-actions" role="group" aria-label="Quick IP examples">
+          <span class="qa-label">Quick:</span>
+          <button class="qa-btn" data-ip="8.8.8.8" aria-label="Track Google DNS">Google DNS</button>
+          <button class="qa-btn" data-ip="1.1.1.1" aria-label="Track Cloudflare DNS">Cloudflare</button>
+          <button class="qa-btn" data-ip="208.67.222.222" aria-label="Track OpenDNS">OpenDNS</button>
+          <button class="qa-btn" data-ip="github.com" aria-label="Track GitHub">GitHub</button>
+        </div>
+      </div>
+
+      <!-- Results area (hidden until search) -->
+      <div id="results-area" class="results-area hidden" aria-live="polite">
+
+        <!-- IP Hero Card -->
+        <div class="result-hero">
+          <div class="hero-ip-display">
+            <div class="hero-label">Tracked IP</div>
+            <div class="hero-ip" id="res-ip">—</div>
+            <div class="hero-hostname" id="res-hostname">—</div>
+          </div>
+          <div class="hero-badges">
+            <span class="badge" id="badge-type">—</span>
+            <span class="badge" id="badge-proxy">—</span>
+            <span class="badge" id="badge-mobile">—</span>
+            <span class="badge" id="badge-hosting">—</span>
+          </div>
+          <div class="hero-score-wrap">
+            <div class="threat-ring">
+              <svg viewBox="0 0 80 80" width="80" height="80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="#1a1a2e" stroke-width="8"/>
+                <circle cx="40" cy="40" r="34" fill="none" stroke="url(#scoreGrad)" stroke-width="8"
+                        stroke-dasharray="213.6" id="score-circle" stroke-dashoffset="213.6"
+                        stroke-linecap="round" transform="rotate(-90 40 40)"/>
+                <text x="40" y="36" text-anchor="middle" font-family="JetBrains Mono" font-size="14" font-weight="600" fill="#fff" id="score-num">0</text>
+                <text x="40" y="50" text-anchor="middle" font-family="Inter" font-size="7" fill="#888">THREAT</text>
+                <defs>
+                  <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00d4ff"/>
+                    <stop offset="100%" stop-color="#7b2ff7"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="score-label" id="score-label">Analyzing...</div>
+          </div>
+          <button class="btn-copy hero-copy" id="btn-copy-ip" aria-label="Copy IP address" title="Copy IP">⎘ Copy</button>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="stats-grid">
+
+          <!-- Geolocation Card -->
+          <div class="stat-card" id="card-geo" aria-label="Geolocation information">
+            <div class="card-header">
+              <span class="card-icon">🌍</span>
+              <h2 class="card-title">Geolocation</h2>
+              <span class="card-badge">LIVE</span>
+            </div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Country</span><span class="info-value" id="geo-country">—</span></div>
+              <div class="info-row"><span class="info-label">Region</span><span class="info-value" id="geo-region">—</span></div>
+              <div class="info-row"><span class="info-label">City</span><span class="info-value" id="geo-city">—</span></div>
+              <div class="info-row"><span class="info-label">District</span><span class="info-value" id="geo-district">—</span></div>
+              <div class="info-row"><span class="info-label">ZIP Code</span><span class="info-value" id="geo-zip">—</span></div>
+              <div class="info-row"><span class="info-label">Latitude</span><span class="info-value mono" id="geo-lat">—</span></div>
+              <div class="info-row"><span class="info-label">Longitude</span><span class="info-value mono" id="geo-lon">—</span></div>
+              <div class="info-row"><span class="info-label">Accuracy</span><span class="info-value" id="geo-accuracy">—</span></div>
+            </div>
+          </div>
+
+          <!-- Network Card -->
+          <div class="stat-card" id="card-network" aria-label="Network information">
+            <div class="card-header">
+              <span class="card-icon">🔗</span>
+              <h2 class="card-title">Network</h2>
+            </div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">ISP</span><span class="info-value" id="net-isp">—</span></div>
+              <div class="info-row"><span class="info-label">Organization</span><span class="info-value" id="net-org">—</span></div>
+              <div class="info-row"><span class="info-label">ASN</span><span class="info-value mono" id="net-asn">—</span></div>
+              <div class="info-row"><span class="info-label">AS Name</span><span class="info-value" id="net-as-name">—</span></div>
+              <div class="info-row"><span class="info-label">IP Version</span><span class="info-value" id="net-version">—</span></div>
+              <div class="info-row"><span class="info-label">IP Type</span><span class="info-value" id="net-type">—</span></div>
+              <div class="info-row"><span class="info-label">CIDR</span><span class="info-value mono" id="net-cidr">—</span></div>
+              <div class="info-row"><span class="info-label">Reverse DNS</span><span class="info-value mono" id="net-rdns">—</span></div>
+            </div>
+          </div>
+
+          <!-- Security Card -->
+          <div class="stat-card" id="card-security" aria-label="Security analysis">
+            <div class="card-header">
+              <span class="card-icon">🛡️</span>
+              <h2 class="card-title">Security Analysis</h2>
+              <span class="card-badge danger" id="sec-alert-badge" hidden>RISK</span>
+            </div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Proxy/VPN</span><span class="info-value" id="sec-proxy">—</span></div>
+              <div class="info-row"><span class="info-label">Tor Exit Node</span><span class="info-value" id="sec-tor">—</span></div>
+              <div class="info-row"><span class="info-label">Hosting/DC</span><span class="info-value" id="sec-hosting">—</span></div>
+              <div class="info-row"><span class="info-label">Mobile</span><span class="info-value" id="sec-mobile">—</span></div>
+              <div class="info-row"><span class="info-label">Abuse Score</span><span class="info-value" id="sec-abuse">—</span></div>
+              <div class="info-row"><span class="info-label">Blacklisted</span><span class="info-value" id="sec-blacklist">—</span></div>
+              <div class="info-row"><span class="info-label">Spam DB</span><span class="info-value" id="sec-spam">—</span></div>
+              <div class="info-row"><span class="info-label">Threat Level</span><span class="info-value" id="sec-threat">—</span></div>
+            </div>
+          </div>
+
+          <!-- Timezone Card -->
+          <div class="stat-card" id="card-timezone" aria-label="Timezone information">
+            <div class="card-header">
+              <span class="card-icon">⏱</span>
+              <h2 class="card-title">Time & Timezone</h2>
+            </div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Timezone</span><span class="info-value" id="tz-id">—</span></div>
+              <div class="info-row"><span class="info-label">UTC Offset</span><span class="info-value mono" id="tz-offset">—</span></div>
+              <div class="info-row"><span class="info-label">Current Time</span><span class="info-value mono" id="tz-time">—</span></div>
+              <div class="info-row"><span class="info-label">Current Date</span><span class="info-value" id="tz-date">—</span></div>
+              <div class="info-row"><span class="info-label">Abbreviation</span><span class="info-value" id="tz-abbr">—</span></div>
+              <div class="info-row"><span class="info-label">DST Active</span><span class="info-value" id="tz-dst">—</span></div>
+              <div class="info-row"><span class="info-label">DST Savings</span><span class="info-value" id="tz-savings">—</span></div>
+              <div class="info-row"><span class="info-label">Locale</span><span class="info-value" id="tz-locale">—</span></div>
+            </div>
+          </div>
+
+          <!-- Currency Card -->
+          <div class="stat-card" id="card-currency" aria-label="Currency information">
+            <div class="card-header">
+              <span class="card-icon">💱</span>
+              <h2 class="card-title">Currency & Economy</h2>
+            </div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Currency</span><span class="info-value" id="cur-name">—</span></div>
+              <div class="info-row"><span class="info-label">Symbol</span><span class="info-value" id="cur-symbol">—</span></div>
+              <div class="info-row"><span class="info-label">Code</span><span class="info-value mono" id="cur-code">—</span></div>
+              <div class="info-row"><span class="info-label">vs USD</span><span class="info-value" id="cur-rate">—</span></div>
+              <div class="info-row"><span class="info-label">Country Code</span><span class="info-value" id="cur-country-code">—</span></div>
+              <div class="info-row"><span class="info-label">Calling Code</span><span class="info-value mono" id="cur-calling">—</span></div>
+              <div class="info-row"><span class="info-label">Languages</span><span class="info-value" id="cur-lang">—</span></div>
+              <div class="info-row"><span class="info-label">Continent</span><span class="info-value" id="cur-continent">—</span></div>
+            </div>
+          </div>
+
+          <!-- Connection Analysis Card -->
+          <div class="stat-card" id="card-connection" aria-label="Connection analysis">
+            <div class="card-header">
+              <span class="card-icon">📡</span>
+              <h2 class="card-title">Connection Analysis</h2>
+            </div>
+            <div class="card-body">
+              <div class="info-row"><span class="info-label">Ping (Est.)</span><span class="info-value mono" id="conn-ping">—</span></div>
+              <div class="info-row"><span class="info-label">Distance</span><span class="info-value" id="conn-distance">—</span></div>
+              <div class="info-row"><span class="info-label">RTT Class</span><span class="info-value" id="conn-rtt">—</span></div>
+              <div class="info-row"><span class="info-label">Border Gateway</span><span class="info-value" id="conn-bgp">—</span></div>
+              <div class="info-row"><span class="info-label">Anycast</span><span class="info-value" id="conn-anycast">—</span></div>
+              <div class="info-row"><span class="info-label">Private IP</span><span class="info-value" id="conn-private">—</span></div>
+              <div class="info-row"><span class="info-label">Reserved</span><span class="info-value" id="conn-reserved">—</span></div>
+              <div class="info-row"><span class="info-label">Bogon</span><span class="info-value" id="conn-bogon">—</span></div>
+            </div>
+          </div>
+
+        </div><!-- /stats-grid -->
+
+        <!-- Map Section -->
+        <div class="map-section">
+          <div class="map-header">
+            <h2 class="section-title">📍 Live Location Map</h2>
+            <div class="map-controls">
+              <button class="map-ctrl-btn active" id="map-satellite" aria-label="Satellite view">Satellite</button>
+              <button class="map-ctrl-btn" id="map-street" aria-label="Street view">Street</button>
+              <button class="map-ctrl-btn" id="map-dark" aria-label="Dark view">Dark</button>
+              <button class="map-ctrl-btn" id="btn-map-fullscreen" aria-label="Full screen map">⛶ Fullscreen</button>
+            </div>
+          </div>
+          <div id="map" class="map-container" aria-label="Interactive location map" role="application"></div>
+        </div>
+
+        <!-- Raw Data / Technical Info -->
+        <div class="raw-section">
+          <div class="raw-header">
+            <h2 class="section-title">⚙ Raw Technical Data</h2>
+            <div class="raw-controls">
+              <button class="raw-ctrl-btn active" id="raw-view-json" aria-pressed="true">JSON</button>
+              <button class="raw-ctrl-btn" id="raw-view-table" aria-pressed="false">Table</button>
+              <button class="btn-copy" id="btn-copy-raw" aria-label="Copy raw data">⎘ Copy All</button>
+            </div>
+          </div>
+          <pre id="raw-json" class="raw-data" aria-label="Raw JSON data" tabindex="0"></pre>
+          <div id="raw-table" class="raw-table-wrap hidden" aria-label="Raw data table"></div>
+        </div>
+
+      </div><!-- /results-area -->
+
+      <!-- Empty state -->
+      <div id="empty-state" class="empty-state" aria-label="Welcome screen">
+        <div class="empty-icon" aria-hidden="true">⌖</div>
+        <h2 class="empty-title">Enter an IP to Begin Tracing</h2>
+        <p class="empty-desc">azra-IP provides comprehensive geolocation, network, and security intelligence for any IP address or domain worldwide.</p>
+        <div class="empty-features">
+          <div class="ef-item"><span>🌍</span> Geolocation</div>
+          <div class="ef-item"><span>🛡️</span> Security Scan</div>
+          <div class="ef-item"><span>🔗</span> Network Info</div>
+          <div class="ef-item"><span>⏱</span> Timezone</div>
+          <div class="ef-item"><span>📡</span> ASN Data</div>
+          <div class="ef-item"><span>💱</span> Currency</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===== TAB: HISTORY ===== -->
+    <section id="tab-history" class="tab-section hidden" aria-label="Search history">
+      <div class="section-header">
+        <h2 class="section-title">◷ Search History</h2>
+        <div class="section-actions">
+          <input type="text" id="history-search" class="mini-input" placeholder="Filter history..." aria-label="Filter history" />
+          <button id="btn-clear-history" class="btn-ghost btn-sm" aria-label="Clear all history">🗑 Clear All</button>
+        </div>
+      </div>
+      <div id="history-list" class="history-list" role="list" aria-label="Search history list">
+        <div class="empty-history" id="empty-history">No history yet. Track an IP to begin.</div>
+      </div>
+    </section>
+
+    <!-- ===== TAB: BATCH SCAN ===== -->
+    <section id="tab-batch" class="tab-section hidden" aria-label="Batch IP scanner">
+      <div class="section-header">
+        <h2 class="section-title">⊞ Batch IP Scanner</h2>
+        <div class="section-actions">
+          <button id="btn-batch-import" class="btn-ghost btn-sm" aria-label="Import IP list">⤒ Import .txt</button>
+          <button id="btn-batch-export" class="btn-ghost btn-sm" aria-label="Export results">⤓ Export CSV</button>
+        </div>
+      </div>
+      <div class="batch-layout">
+        <div class="batch-input-panel">
+          <label for="batch-input" class="batch-label">Enter IPs (one per line, max 20):</label>
+          <textarea id="batch-input" class="batch-textarea" placeholder="8.8.8.8&#10;1.1.1.1&#10;208.67.222.222&#10;..." aria-label="Batch IP input" rows="12" spellcheck="false"></textarea>
+          <div class="batch-actions">
+            <button id="btn-batch-run" class="btn-primary" aria-label="Run batch scan">▷ Run Batch Scan</button>
+            <button id="btn-batch-clear" class="btn-ghost" aria-label="Clear batch input">Clear</button>
+          </div>
+          <div id="batch-progress-wrap" class="batch-progress-wrap hidden">
+            <div class="batch-progress-bar-outer">
+              <div class="batch-progress-bar" id="batch-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span id="batch-progress-text" class="batch-progress-text">0 / 0</span>
+          </div>
+          <input type="file" id="batch-file-input" accept=".txt" class="sr-only" aria-label="Import text file" />
+        </div>
+        <div class="batch-results-panel">
+          <div id="batch-results" class="batch-results" role="list" aria-label="Batch scan results">
+            <div class="batch-empty">Enter IPs and click Run Batch Scan</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TAB: COMPARE ===== -->
+    <section id="tab-compare" class="tab-section hidden" aria-label="IP comparison">
+      <div class="section-header">
+        <h2 class="section-title">⇌ Compare IPs</h2>
+      </div>
+      <div class="compare-inputs">
+        <div class="compare-input-wrap">
+          <label for="compare-ip-a" class="compare-label">IP Address A</label>
+          <input id="compare-ip-a" type="text" class="compare-input" placeholder="e.g. 8.8.8.8" aria-label="First IP to compare" spellcheck="false" />
+        </div>
+        <div class="compare-vs">VS</div>
+        <div class="compare-input-wrap">
+          <label for="compare-ip-b" class="compare-label">IP Address B</label>
+          <input id="compare-ip-b" type="text" class="compare-input" placeholder="e.g. 1.1.1.1" aria-label="Second IP to compare" spellcheck="false" />
+        </div>
+        <button id="btn-compare-run" class="btn-primary" aria-label="Run comparison">Compare →</button>
+      </div>
+      <div id="compare-results" class="compare-results hidden" aria-label="Comparison results"></div>
+    </section>
+
+  </main>
+
+  <!-- === LOADING OVERLAY === -->
+  <div id="loading-overlay" class="loading-overlay hidden" aria-live="assertive" aria-label="Loading">
+    <div class="loader-inner">
+      <div class="loader-ring"></div>
+      <div class="loader-text" id="loader-text">Tracing IP...</div>
+    </div>
+  </div>
+
+  <!-- === TOAST NOTIFICATIONS === -->
+  <div id="toast-container" class="toast-container" role="alert" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- === FOOTER === -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-inner">
+      <span class="footer-brand">azra-IP &copy; 2024</span>
+      <span class="footer-sep">|</span>
+      <span class="footer-dev">Built by <strong>azraDev</strong></span>
+      <span class="footer-sep">|</span>
+      <span class="footer-api">Powered by ip-api.com & ipapi.co</span>
+      <span class="footer-sep">|</span>
+      <span class="footer-version">v2.1.0</span>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
