@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e14">
+<meta name="description" content="azr-promt — ubah gambar, logo, banner, atau video menjadi prompt super lengkap yang dipahami AI. © azrDev">
+<title>azr-promt — © azrDev</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0e14'/%3E%3Cpath d='M14 46 32 14l18 32h-9l-9-17-9 17z' fill='%2322d3ee'/%3E%3Ccircle cx='32' cy='44' r='4' fill='%23e879f9'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="38" height="38"><rect width="64" height="64" rx="14" fill="#0b0e14" stroke="#22d3ee" stroke-opacity=".5"/><path d="M14 46 32 14l18 32h-9l-9-17-9 17z" fill="#22d3ee"/><circle cx="32" cy="44" r="4" fill="#e879f9"/></svg>
+    </div>
+    <div>
+      <h1>azr<span>-promt</span></h1>
+      <p class="tag">Gambar · Logo · Banner · Video → Prompt super lengkap</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span id="serverBadge" class="badge" title="Status server Termux">server: …</span>
+    <button class="btn ghost" id="btnHistory" type="button">Riwayat</button>
+    <button class="btn ghost" id="btnSettings" type="button">Pengaturan AI</button>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- ============ PANEL KIRI: INPUT ============ -->
+  <section class="card" aria-labelledby="h-input">
+    <h2 id="h-input"><span class="n">1</span> Unggah media</h2>
+
+    <label id="drop" class="drop" tabindex="0">
+      <input id="file" type="file" accept="image/*,video/*" hidden>
+      <div class="drop-inner" id="dropInner">
+        <div class="drop-ic" aria-hidden="true">⬆</div>
+        <strong>Ketuk untuk pilih file</strong>
+        <span>atau seret &amp; lepas · foto, logo, banner, video</span>
+        <small>JPG · PNG · WebP · GIF · MP4 · WebM · MOV</small>
+      </div>
+      <div class="preview" id="preview" hidden></div>
+    </label>
+    <div id="filmstrip" class="filmstrip" hidden></div>
+    <div id="fileMeta" class="meta" hidden></div>
+
+    <h2 class="mt"><span class="n">2</span> Atur hasil</h2>
+
+    <div class="form">
+      <div class="row2">
+        <div class="field">
+          <label for="mediaType">Jenis media</label>
+          <select id="mediaType">
+            <option value="auto">Otomatis (deteksi)</option>
+            <option value="photo">Foto realistis</option>
+            <option value="logo">Logo</option>
+            <option value="banner">Banner / poster</option>
+            <option value="illustration">Ilustrasi / seni digital</option>
+            <option value="ui">Tampilan UI / aplikasi</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="target">Dibuat untuk</label>
+          <select id="target">
+            <option value="universal">Universal (semua AI)</option>
+            <option value="midjourney">Midjourney</option>
+            <option value="sd">Stable Diffusion / SDXL</option>
+            <option value="flux">Flux</option>
+            <option value="dalle">ChatGPT / DALL·E / Gemini Image</option>
+            <option value="video">Video AI (Veo / Sora / Runway / Kling)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tingkat detail</label>
+        <div class="seg" id="detailSeg" role="radiogroup" aria-label="Tingkat detail">
+          <button type="button" role="radio" data-v="standard" aria-checked="false">Standar</button>
+          <button type="button" role="radio" data-v="super" aria-checked="true" class="on">Super lengkap</button>
+          <button type="button" role="radio" data-v="ultra" aria-checked="false">Ultra kompleks</button>
+        </div>
+        <small class="hint" id="detailHint"></small>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="lang">Bahasa prompt</label>
+          <select id="lang">
+            <option value="en">English (paling akurat untuk AI)</option>
+            <option value="id">Bahasa Indonesia</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mode">Mode analisis</label>
+          <select id="mode">
+            <option value="ai">AI Vision (paling pintar)</option>
+            <option value="local">Lokal (tanpa API key)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" id="framesField" hidden>
+        <label for="frames">Jumlah frame video yang dianalisis</label>
+        <select id="frames">
+          <option>4</option><option selected>6</option><option>8</option><option>10</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="subject">Deskripsi subjek <em>(opsional, sangat membantu mode Lokal)</em></label>
+        <input id="subject" type="text" maxlength="300" placeholder="mis. seekor rubah oranye di hutan berkabut">
+      </div>
+
+      <div class="field">
+        <label>Penekanan tambahan</label>
+        <div class="chips" id="extras">
+          <label class="chip"><input type="checkbox" value="exact"> Tiru persis</label>
+          <label class="chip"><input type="checkbox" value="text"> Transkripsi teks</label>
+          <label class="chip"><input type="checkbox" value="cine"> Sinematik</label>
+          <label class="chip"><input type="checkbox" value="minimal"> Minimalis</label>
+          <label class="chip"><input type="checkbox" value="print"> Siap cetak</label>
+          <label class="chip"><input type="checkbox" value="social"> Media sosial</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="notes">Catatan khusus <em>(opsional)</em></label>
+        <textarea id="notes" rows="2" maxlength="600" placeholder="mis. ubah warna dominan menjadi biru, tambahkan nuansa malam hari"></textarea>
+      </div>
+
+      <button id="btnGo" class="btn primary big" type="button" disabled>⚡ Buat prompt</button>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ============ PANEL KANAN: HASIL ============ -->
+  <section class="card result" aria-labelledby="h-out">
+    <div class="res-head">
+      <h2 id="h-out"><span class="n">3</span> Hasil prompt</h2>
+      <div class="res-actions">
+        <button class="btn small" id="btnCopy" type="button" disabled>Salin</button>
+        <button class="btn small" id="btnTxt" type="button" disabled>.txt</button>
+        <button class="btn small" id="btnJson" type="button" disabled>.json</button>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="main" class="on" aria-selected="true">Prompt</button>
+      <button role="tab" data-tab="neg" aria-selected="false">Negative</button>
+      <button role="tab" data-tab="struct" aria-selected="false">Terstruktur</button>
+      <button role="tab" data-tab="analysis" aria-selected="false">Analisis</button>
+      <button role="tab" data-tab="vars" aria-selected="false">Variasi</button>
+    </div>
+
+    <div id="empty" class="empty">
+      <div class="empty-art" aria-hidden="true">⌘</div>
+      <p>Hasil akan muncul di sini.</p>
+      <p class="muted">Unggah media, pilih target, lalu tekan <b>Buat prompt</b>.</p>
+    </div>
+
+    <div id="panes" hidden>
+      <div class="pane" data-pane="main">
+        <div class="pill-row" id="pillMain"></div>
+        <pre id="outMain" class="out" tabindex="0"></pre>
+        <div id="paramsBox" class="params" hidden></div>
+      </div>
+      <div class="pane" data-pane="neg" hidden>
+        <pre id="outNeg" class="out" tabindex="0"></pre>
+      </div>
+      <div class="pane" data-pane="struct" hidden>
+        <pre id="outStruct" class="out code" tabindex="0"></pre>
+      </div>
+      <div class="pane" data-pane="analysis" hidden>
+        <div id="outAnalysis"></div>
+      </div>
+      <div class="pane" data-pane="vars" hidden>
+        <div id="outVars"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="ascii" aria-hidden="true">█▀█ ▀█ █▀█   █▀█ █▀█ █▀█ █▀▄▀█ ▀█▀</div>
+  <p>© <span id="year">2026</span> <b>azrDev</b> — perusahaan induk azr-promt. Semua hak dilindungi.</p>
+  <p class="muted">Berjalan di server Termux milikmu sendiri. Media diproses di perangkatmu; hanya mode AI Vision yang mengirim gambar/frame ke penyedia AI pilihanmu.</p>
+</footer>
+
+<!-- ============ DIALOG PENGATURAN ============ -->
+<dialog id="dlgSettings">
+  <form method="dialog" class="dlg">
+    <h3>Pengaturan AI Vision</h3>
+    <p class="muted small">Kunci API disimpan hanya di browser ini dan dikirim ke server lokalmu untuk diteruskan ke penyedia. Kamu juga bisa menaruhnya di server lewat variabel lingkungan (lihat README).</p>
+
+    <div class="field">
+      <label for="provider">Penyedia</label>
+      <select id="provider">
+        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="openai">OpenAI / kompatibel</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="model">Nama model</label>
+      <input id="model" type="text" autocomplete="off" spellcheck="false">
+      <small class="hint" id="modelHint"></small>
+    </div>
+    <div class="field">
+      <label for="apiKey">API key</label>
+      <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="kosongkan jika sudah di-set di server">
+    </div>
+    <div class="field" id="baseUrlField" hidden>
+      <label for="baseUrl">Base URL <em>(opsional)</em></label>
+      <input id="baseUrl" type="text" autocomplete="off" spellcheck="false" placeholder="https://api.openai.com/v1">
+    </div>
+    <label class="chip wide"><input type="checkbox" id="remember"> Ingat API key di browser ini</label>
+
+    <div class="dlg-actions">
+      <button class="btn ghost" value="cancel">Batal</button>
+      <button class="btn primary" id="btnSaveSettings" value="ok">Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ============ DIALOG RIWAYAT ============ -->
+<dialog id="dlgHistory">
+  <form method="dialog" class="dlg">
+    <h3>Riwayat prompt</h3>
+    <div id="historyList" class="hist"></div>
+    <div class="dlg-actions">
+      <button class="btn ghost" type="button" id="btnClearHistory">Hapus semua</button>
+      <button class="btn primary" value="close">Tutup</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
